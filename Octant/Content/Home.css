@@ -1,0 +1,31 @@
+﻿/* ----------------------------------------------------------------
+                        Home View
+---------------------------------------------------------------- */
+
+#home-header {
+    /*margin-top: -10px;
+    border: 10px solid #008CBA;
+    border-top: none;
+    border-bottom: 2px solid #008CBA;*/
+
+    border-bottom: 1px solid #008CBA;
+}
+
+#home-campagns {
+
+}
+
+#home-interviews {
+   
+}
+
+#home-administration {
+    
+}
+
+
+.home-userinfo {
+    margin-top: 21px;
+    color: darkgrey;
+    text-align: right;
+}

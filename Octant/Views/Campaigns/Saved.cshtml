@@ -1,0 +1,720 @@
+﻿@using System.Data.Entity
+@using System.Drawing
+@using System.Globalization
+@using IdentitySample.Models
+@using Interview
+@using Framework
+@using Newtonsoft.Json
+@using Syncfusion.JavaScript.DataVisualization.Models
+@using ChartTheme = Syncfusion.JavaScript.DataVisualization.ChartTheme
+@model Campaign
+
+@{
+    ViewBag.Title = "Saved";
+    var db = new ApplicationDbContext();
+    var dba = new ApplicationDbContext();
+}
+
+@Styles.Render("~/FL/pages/campaigns/saved")
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li><a href="@Url.Action("Index", "Home")">Campaigns</a></li>
+        <li><a href="@Url.Action("Details", "Campaigns", new { id = Model.IdCampaign })">@Model.Name</a></li>
+        <li class="active">Saved</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Campaign @Model.Name</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row campaigndesc">
+                        <div class="col-xs-10 col-xs-offset-1">
+                            <p><label>Manager :</label> @Model.ApplicationUsers.FullName</p>
+                            <p><label>Dates :</label> @Html.DisplayFor(x => x.StartDate) &nbsp; <label>to</label> @Html.DisplayFor(x => x.EndDate)</p>
+                        </div>
+                    </div>
+                    <div class="row campaigndesc">
+                        <div class="col-xs-10  col-xs-offset-1">
+                            <p><label>Description :</label> @Model.Description</p>
+                        </div>
+                    </div>
+                    <div class="row campaigndesc">
+                        <div class="col-xs-10  col-xs-offset-1">
+                            <p><label>Comment :</label> @Model.Comment</p>
+                        </div>
+                    </div>
+                    <div class="row campaigndesc">
+                        <div class="col-xs-10  col-xs-offset-1">
+                            <p><label>Questionnaire :</label> @ViewBag.Questionnaire</p>
+                        </div>
+                    </div>
+                </div><!-- ./box-body -->
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Word", "Generate", new { id = Model.IdCampaign, type = 2  })" data-toggle="tooltip" title="Generate a Word report for your Firm"><i class="fa fa-file-word-o text-primary"></i> &nbsp;Firm</a>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Word", "Generate", new { id = Model.IdCampaign, type = 1 })" data-toggle="tooltip" title="Generate a Word report for your Customer"><i class="fa fa-file-word-o text-primary"></i> &nbsp;Customer</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                    <br/>
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Word", "Generate", new { id = Model.IdCampaign, type = 2, pdf = true })" data-toggle="tooltip" title="Generate a PDF report for your Firm"><i class="fa fa-file-pdf-o text-danger"></i> &nbsp;Firm Report</a>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Word", "Generate", new { id = Model.IdCampaign, type = 1, pdf = true })" data-toggle="tooltip" title="Generate a PDF report for your Customer"><i class="fa fa-file-pdf-o text-danger"></i> &nbsp;Customer Report</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                    <br />
+                    @*<div class="row">
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("DownloadPDF", "Campaigns", new { id = Model.IdCampaign, isfirm = true })" data-toggle="tooltip" title="Generate a PDF report for your Firm"><i class="fa fa-file-pdf-o text-danger"></i> &nbsp;Firm</a>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("DownloadPDF", "Campaigns", new { id = Model.IdCampaign, isfirm = false })" data-toggle="tooltip" title="Generate a PDF report for your Customer"><i class="fa fa-file-pdf-o text-danger"></i> &nbsp;Customer</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->*@
+                </div><!-- /.box-footer -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+        <div class="col-md-7">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Campaign Score</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+        <table class="table">
+            <tbody>
+            @{
+                double ki = 0;
+                double kn = 0;
+            }
+            @foreach (Tuple<Interview, double> insc in ViewBag.InterviewsScores)
+            {
+                <tr>
+                    <td>@insc.Item1.Name</td>
+                    <td>
+                        <div class="progress progress-xs" style="width: 90%; min-width: 180px; margin-top: 10px;">
+                            <div class="progress-bar @{
+                                                         if (insc.Item2 >= 4)
+                                                         {
+                                                             @Html.Raw("progress-bar-success")
+                                                             ;
+                                                         }
+                                                         else
+                                                         {
+                                                             if ((insc.Item2 <= 1))
+                                                             {
+                                                                 @Html.Raw("progress-bar-danger")
+                                                                 ;
+                                                             }
+                                                             else
+                                                             {
+                                                                 @Html.Raw("progress-bar-info")
+                                                                 ;
+                                                             }
+                                                         }
+                                                     }" style="width: @((insc.Item2*100/5).ToString(new CultureInfo("en-US")))%" role="progressbar" aria-valuenow="@Html.DisplayFor(modelItem => insc.Item2)" aria-valuemin="0" aria-valuemax="5"></div>
+                        </div>
+                    </td>
+                    <td>@insc.Item2</td>
+                </tr>
+                    kn++;
+                    ki += insc.Item2;
+                }
+            </tbody>
+        </table>
+
+    </div><!-- /.col -->
+    <div class="col-md-6 col-sm-12 text-center" style="min-width: 230px;">
+                            @{
+                                var val = Convert.ToInt32(((kn == 0) ? 0 : (ki/kn))).ToString(CultureInfo.InvariantCulture);
+                            }
+                            <input id="overallscore" value="@val" data-toggle="tooltip" title="@val"/>
+                        </div>
+                        <div class="col-md-4 col-sm-12" style="min-width: 230px;">
+                            <input type="text" id="overallscore" value="@Convert.ToInt32(ViewBag.Part)" data-toggle="tooltip" title="@ViewBag.Part" />
+                        </div>
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <div class="row">
+        <div class="col-md-5">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Nodes Score - Averages from Interviews</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <table class="table">
+                        <tbody>
+                        @foreach (var pnode in ViewBag.PNodes as List<Node>)
+                        {
+                            var subnodes = ((List<Node>) ViewBag.Nodes).FindAll(s => s.IdParentNode == pnode.IdNode);
+                            <tr class="pnode">
+                                @if (subnodes.Any())
+                                {
+                                    <td><b>@pnode.Name</b></td>
+                                }
+                                else
+                                {
+                                    <td>@pnode.Name</td>
+                                }
+
+                                @{
+                                    var score = 0.0;
+                                    var tmpnode = ((List<Tuple<string, double>>) ViewBag.Nodescore).Find(s => s.Item1 == pnode.Name);
+                                    if (tmpnode != null)
+                                    {
+                                        score = tmpnode.Item2;
+                                    }
+
+                                }
+                                <td>
+                                    <div class="progress progress-xs" style="width: 90%; min-width: 180px; margin-top: 10px;">
+                                        <div class="progress-bar @{
+                                                                     if (score >= 4)
+                                                                     {
+                                                                         @Html.Raw("progress-bar-success")
+                                                                         ;
+                                                                     }
+                                                                     else
+                                                                     {
+                                                                         if ((score <= 1))
+                                                                         {
+                                                                             @Html.Raw("progress-bar-danger")
+                                                                             ;
+                                                                         }
+                                                                         else
+                                                                         {
+                                                                             @Html.Raw("progress-bar-info")
+                                                                             ;
+                                                                         }
+                                                                     }
+                                                                 }" style="width: @((score*100/5).ToString(new CultureInfo("en-US")))%" role="progressbar" aria-valuenow="@Html.DisplayFor(modelItem => score)" aria-valuemin="0" aria-valuemax="5"></div>
+                                    </div>
+                                </td>
+                                <td>@score</td>
+                                @if (subnodes.Any())
+                                {
+                                    <td><button class="btn btn-box-tool pull-right pnodecollapse"><i class="fa fa-minus"></i></button></td>
+                                }
+                            </tr>
+                            if (subnodes.Any())
+                            {
+                                foreach (var subnode in subnodes)
+                                {
+                                    <tr>
+                                        <td style="padding-left: 15px;">@subnode.Name</td>
+                                        @{
+                                            var nodescore = ((List<Tuple<string, double>>) ViewBag.Nodescore);
+                                            var subscore = 0.0;
+                                            if (nodescore != null)
+                                            {
+                                                var ns = nodescore.Find(s => s.Item1 == subnode.Name);
+                                                if (ns != null)
+                                                {
+                                                    subscore = ns.Item2;
+                                                }
+                                            }
+                                        }
+                                        <td>
+                                            <div class="progress progress-xs" style="width: 90%; min-width: 180px; margin-top: 10px;">
+                                                <div class="progress-bar @{
+                                                                             if (subscore >= 4)
+                                                                             {
+                                                                                 @Html.Raw("progress-bar-success")
+                                                                             }
+                                                                             else
+                                                                             {
+                                                                                 if ((subscore <= 1))
+                                                                                 {
+                                                                                     @Html.Raw("progress-bar-danger")
+                                                                                 }
+                                                                                 else
+                                                                                 {
+                                                                                     @Html.Raw("progress-bar-info")
+                                                                                 }
+                                                                             }
+                                                                         }" style="width: @((subscore*100/5).ToString(new CultureInfo("en-US")))%" role="progressbar" aria-valuenow="@Html.DisplayFor(modelItem => subscore)" aria-valuemin="0" aria-valuemax="5"></div>
+                                            </div>
+                                        </td>
+                                        <td>@subscore</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+
+        <div class="col-md-7">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Nodes Score - Averages from Groups</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    @{ var exist = (ViewBag.Groups as List<Group>).Any();}
+                    <div align="center">
+                        @if (exist && ViewBag.lvl)
+                        {
+                            @Html.DropDownList("NodeList", ViewBag.NodeList as SelectList, "All", null)
+                        }
+                    </div>
+                    <div>
+                        @{
+                            if (!exist)
+                            {
+                                <span align="center">No data</span>
+                            }
+                            else
+                            {
+                                @(Html.EJ().Chart("container").PrimaryYAxis(pr => pr.Range(ra => ra.Min(0).Max(5).Interval(1)))
+                                      .CommonSeriesOptions(cr => cr.Type(SeriesType.Radar).EnableAnimation(true).Tooltip(tl => tl.Visible(true)))
+                                      .Series(se =>
+                                      {
+                                          var i = 0;
+                                          foreach (var group in ViewBag.Groups as List<Group>)
+                                          {
+                                              se.Points(pts =>
+                                              {
+                                                  foreach (var radar in (ViewBag.Radar as List<Tuple<string, string, double>>).Where(radar => radar.Item1 == @group.Name))
+                                                  {
+                                                      pts.X(radar.Item2).Y(radar.Item3).Add();
+                                                  }
+                                              }).ZOrder(i).Marker(mre => mre.Visible(true)).Name(group.Name).DrawType(DrawType.Line).Add();
+                                              i++;
+                                          }
+                                      })
+                                      .Load("loadTheme")
+                                      .Size(sz => sz.Height("480"))
+                                      .Legend(lg => lg.Visible(true))
+                                      //.Background("white")
+                                      .CanResize(true)
+                                      )
+                            }
+                        }
+                    </div>
+
+                    @*<div class="box-tools pull-right">
+                        <button class="btn btn-warning btn-sm" onclick="onExport(1)"> Download as image</button>
+                    </div>*@
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+        <div class="col-md-7 pull-right">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Nodes Score - Averages from Groups</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    @{
+                        if (!(ViewBag.Groups as List<Group>).Any())
+                        {
+                            <span align="center">No data</span>
+                        }
+                        else
+                        {
+                            @(Html.EJ().Chart("barchartcontainer").PrimaryYAxis(pr => pr.Range(ra => ra.Min(0).Max(5).Interval(1)))
+                          .CommonSeriesOptions(cs => cs.Type(SeriesType.Bar).EnableAnimation(true).Tooltip(tl => tl.Visible(true)))
+                          .Series(sri =>
+                          {
+                              var i = 0;
+                              foreach (var group in ViewBag.Groups as List<Group>)
+                              {
+                                  sri.Points(ptn =>
+                                  {
+                                      foreach (var radar in ViewBag.Radar as List<Tuple<string, string, double>>)
+                                      {
+                                          if (radar.Item1 == group.Name)
+                                          {
+                                              ptn.X(radar.Item2).Y(radar.Item3).Add();
+                                          }
+                                      }
+
+                                  }).ZOrder(i).Marker(mrk => mrk.Visible(true)).Name(group.Name).DrawMode(SeriesDrawMode.Open).Add();
+                                  i++;
+                              }
+                          })
+                          .Legend(lg => lg.Visible(true))
+                          //.Enable3D(true)
+                          //.EnableRotation(true)
+                          //.Rotation(29)
+                          //.Depth(100)
+                          //.WallSize(2)
+                          //.SideBySideSeriesPlacement(true)
+                          .Load("loadTheme")
+                          .Size(sz => sz.Height("400"))
+                          .CanResize(true)
+                            )
+                        }
+                    }
+                    @*<div class="box-tools pull-right">
+                        <button class="btn btn-warning btn-sm" onclick="onExport(2)"> Download as image</button>
+                    </div>*@
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->
+    </div><!-- /.col -->
+    </div><!-- /.row -->
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Summary of the interviews in campaign @Model.Name</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" id="collapseall" data-toggle="tooltip" title="Collapse All"><i class="ion ion-arrow-shrink"></i></button>
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+
+                @foreach (var pnode in ViewBag.PNodes as List<Node>)
+                {
+                    <div class="row summarypnode">
+                        <div class="col-md-12">
+                            <h3>
+                                <span style="color: rgb(238, 131, 0)">@pnode.Name</span>
+                                <button class="btn btn-box-tool pull-right summarypnodecollapse" style="padding-right: 10px;"><i class="fa fa-minus"></i></button>
+                            </h3>
+                        </div>
+                    </div>
+                        
+                    <hr />
+                    if (db.Questions.Any(x => x.IdNode == pnode.IdNode))
+                    {
+                        foreach (var q in db.Questions.Where(q => q.IdNode == pnode.IdNode))
+                        {
+                            <div class="question isrelevant-@(q.IsRelevant ? 1 : 0)">
+                            @{
+                                var qident = "";
+                                if (!string.IsNullOrEmpty(q.Ident))
+                                {
+                                    qident = q.Ident + " - ";
+                                }
+                            }
+                            @*<h4 style="color: rgb(31, 73, 125)">Question @q.Ident : </h4>*@<span><b>@qident @q.Name</b></span><br /><br />
+                            @{
+                                var ansa = dba.Answers.Include(a => a.Interview).Include(a => a.Question).Where(a => a.IdQuestion == q.IdQuestion && a.Interview.IdCampaign == Model.IdCampaign && !a.Interview.Deleted).ToList();
+                                var ansb = ansa;
+                                var ansc = ansa;
+                                var cpt = 0;
+                                foreach (var a in ansa)
+                                {
+                                    <h4 style="color: rgb(51, 132, 204)">Answer from Interview @a.Interview.Name : </h4>
+                                    if (a != null && a.IntervieweeAnswer != null)
+                                    {
+                                        if (a.Question.AnswerType == AnswerType.Integer)
+                                        {
+                                            <b>@Html.Raw(a.IntervieweeAnswer) / 5</b>
+                                        }
+                                        else
+                                        {
+                                            <b>@Html.Raw(a.IntervieweeAnswer) </b>
+                                        }
+                                        if (!string.IsNullOrEmpty(a.Comment))
+                                        {
+                                            <h5>Comment : </h5>
+                                            <span>@Html.DisplayFor(modelItem => a.Comment)</span>
+                                            <br />
+                                        }
+                                        if (!string.IsNullOrEmpty(a.ConsultantComment))
+                                        {
+                                            <h5>Consultant comment : </h5>
+                                            <span>@Html.DisplayFor(modelItem => a.ConsultantComment)</span>
+                                        }
+                                        <br />
+                                        <br />
+                                    }
+                                    else
+                                    {
+                                        <span style="color: darkgray">@Html.Raw("No answer yet")</span>
+                                    }
+                                }
+                                <hr/>
+                            }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        var nodes = ViewBag.Nodes as List<Node>;
+                        foreach (var node in nodes.Where(n => n.IdParentNode == pnode.IdNode))
+                        {
+                            <div class="row summarynode">
+                                <div class="col-md-12">
+                                    <h3>
+                                        <span style="color: rgb(195, 23, 0)">@Html.Raw(" > ")  @node.Name</span>
+                                        <button class="btn btn-box-tool pull-right summarynodecollapse" style="padding-right: 15px;"><i class="fa fa-minus"></i></button>
+                                    </h3>    
+                                </div>
+                            </div>
+                            <hr />
+
+                            foreach (var q in db.Questions.Where(q => q.IdNode == node.IdNode))
+                            {
+                                <div class="question isrelevant-@(q.IsRelevant ? 1 : 0)">
+                                    @{
+                                var qident = "";
+                                if (!string.IsNullOrEmpty(q.Ident))
+                                {
+                                    qident = q.Ident + " - ";
+                                }
+                                    }
+                                    @*<h4 style="color: rgb(31, 73, 125)">Question @q.Ident : </h4>*@<span><b>@qident @q.Name</b></span><br /><br />
+                                    @{
+                                var ansa = dba.Answers.Include(a => a.Interview).Include(a => a.Question).Where(a => a.IdQuestion == q.IdQuestion && a.Interview.IdCampaign == Model.IdCampaign && !a.Interview.Deleted).ToList();
+                                var ansb = ansa;
+                                var ansc = ansa;
+                                var cpt = 0;
+                                foreach (var a in ansa)
+                                {
+                                    <h4 style="color: rgb(51, 132, 204)">Answer from Interview @a.Interview.Name : </h4>
+                                    if (a != null && a.IntervieweeAnswer != null)
+                                    {
+                                        if (a.Question.AnswerType == AnswerType.Integer)
+                                        {
+                                            <b>@Html.Raw(a.IntervieweeAnswer) / 5</b>
+                                        }
+                                        else
+                                        {
+                                            <b>@Html.Raw(a.IntervieweeAnswer) </b>
+                                        }
+                                        if (!string.IsNullOrEmpty(a.Comment))
+                                        {
+                                            <h5>Comment : </h5>
+                                            <span>@Html.DisplayFor(modelItem => a.Comment)</span>
+                                            <br />
+                                        }
+                                        if (!string.IsNullOrEmpty(a.ConsultantComment))
+                                        {
+                                            <h5>Consultant comment : </h5>
+                                            <span>@Html.DisplayFor(modelItem => a.ConsultantComment)</span>
+                                        }
+                                        <br /><br />
+                                    }
+                                    else
+                                    {
+                                        <span style="color: darkgray">@Html.Raw("No answer yet")</span><br />
+                                    }
+                                }
+                                <hr />
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+                }
+                </div><!-- ./box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+@Scripts.Render("~/Scripts/ej")
+
+<!-- Overall Score Circle -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#overallscore").knob({
+            'min': 0,
+            'max': 5,
+            'step': 0.1,
+            'readOnly': true,
+            'fgColor': "#932AB6",
+            'inputColor': "#932AB6",
+            'thickness': "0.2"
+        });
+    });
+</script>
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Campaigns"]').parent().addClass('active');
+    });
+</script>
+
+<!-- Collapse sidebar -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('body.sidebar-mini').addClass('sidebar-collapse');
+    });
+</script>
+
+<script type="text/javascript">
+    $("#controlarea").css("visibility", "visible");
+</script>
+
+<!-- Download radar as image -->
+<script type="text/javascript">
+    function onExport(container) {
+        if (container === 1) {
+            var canvas = $('#container').ejChart("exportChart");
+        } else canvas = $('#chartcontainer').ejChart("exportChart");
+        var image = canvas.toDataURL("image/png")
+            .replace("image/png", "image/octet-stream");
+        var downloadLink = document.createElement("a");
+        downloadLink.href = image;
+        downloadLink.download = "Chart.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".pnodecollapse").each(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus").parent().parent().parent().nextUntil(".pnode").slideToggle(400);
+        });
+
+        $(".pnodecollapse").click(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus").parent().parent().parent().nextUntil(".pnode").slideToggle(400);
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".summarypnode").each(function() {
+            $(this).nextUntil(".summarypnode").fadeOut(400);
+            $(this).find("i").removeClass("fa-minus").addClass("fa-plus");
+        });
+
+        $('#collapseall').click(function() {
+            $('.summarypnode').each(function() {
+                if ($(this).hasClass("toClose")) {
+                    $(this).nextUntil(".summarypnode").fadeOut(400);
+                    $(this).removeClass("toClose");
+                    $(this).find("i").removeClass("fa-minus").addClass("fa-plus");
+                }
+            });
+        });
+
+        $(".summarypnodecollapse").click(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus");
+            var elem = $(this).parent().parent().parent();
+            if (elem.hasClass("toClose")) {
+                elem.removeClass("toClose").find("i").removeClass("fa-minus").addClass("fa-plus");
+                elem.nextUntil(".summarypnode").fadeOut(400);
+                elem.nextUntil(".summarypnode", ".summarynode").find("i").removeClass("fa-minus").addClass("fa-plus");
+            } else {
+                elem.addClass("toClose").find("i").addClass("fa-minus").removeClass("fa-plus");
+                if (elem.parent().find(".summarynode").length > 0) {
+                    elem.nextUntil(".summarypnode", ".summarynode").fadeIn(400);
+                    elem.nextUntil(".summarypnode", ".summarynode").find("i").removeClass("fa-minus").addClass("fa-plus");
+                } else {
+                    elem.nextUntil(".summarypnode").fadeIn(400);
+                }
+            }
+        });
+
+        $(".summarynodecollapse").click(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus");
+            var elem = $(this).parent().parent().parent();
+            elem.toggleClass("toClose").nextUntil(".summarynode").slideToggle(400);
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    jQuery(window).load(function () {
+        var chartObj = $("#container").ejChart("instance");
+        chartObj.redraw();
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        function search(groupName, array){
+            var filtered = array.filter(function(x){return x.Item1 === groupName});
+            return filtered.sort(function(a,b) {return (a.Item2 > b.Item2) ? 1 : ((b.Item2 > a.Item2) ? -1 : 0);} );
+        }
+
+        function loadchart(jdata, jgroups) {
+            var chartObj = $("#container").ejChart("instance");
+            for (var i = 0; i < jgroups.length; i++) {
+                var current = search(jgroups[i].groupName, jdata);
+                for (var j = 0; j < current.length; j++) {
+                    if (!ej.util.isNullOrUndefined(chartObj.model.series[i].points[j])) {
+                        chartObj.model.series[i].points[j].x = current[j].Item2;
+                        chartObj.model.series[i].points[j].y = current[j].Item3;
+                    } else {
+                        chartObj.model.series[i].points[j] = {};
+                        chartObj.model.series[i].points[j].x = current[j].Item2;
+                        chartObj.model.series[i].points[j].y = current[j].Item3;
+                    }
+                }
+            }
+            var nbpoints = (jdata.length / jgroups.length);
+            for (var p = 0; p < jgroups.length; p++) {
+                chartObj.model.series[p].points.length = nbpoints;
+            }
+            chartObj.redraw();
+            chartObj.redraw();
+        }
+
+        $("#NodeList").change(function() {
+            var idnode = $(this).val();
+            if ($("#NodeList option:selected").text() === "All") {
+                idnode = @ViewBag.RootNode;
+            }
+            var jgroups = @Html.Raw(
+                              Json.Encode(
+                                  ((IEnumerable<Group>) ViewBag.Groups).Select(x => new
+                                  {
+                                      groupName = x.Name,
+                                      idGroup = x.IdGroup
+                                  }).OrderBy(g => g.groupName)
+                                  )
+                              );
+            var param = { idnode: idnode, idcampaign: @Model.IdCampaign };
+            $.ajax({
+                    url: '@Url.Action("GetChartData", "Campaigns")',
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(param),
+                    error: function() {
+                        alert("Oops, an error occured. Please try again.");
+                    },
+                    success: function (data) {
+                        var jdata = JSON.parse(data);
+                        //console.log(jdata);
+                        loadchart(jdata, jgroups);
+                    }
+                });
+        });
+    });
+</script>

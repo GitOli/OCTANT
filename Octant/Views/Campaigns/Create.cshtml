@@ -1,0 +1,208 @@
+﻿@using System.Web.UI.WebControls
+@using IdentitySample.Models
+@using Interview
+@model Campaign
+
+@{
+    ViewBag.Title = "Campaign Create";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li><a href="@Url.Action("Index", "Home")">Campaigns</a></li>
+        <li class="active">Create</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-success">
+
+                <form method="post" action="@Url.Action("Create", "Campaigns")" role="form" class="form-horizontal">
+                    <div class="box-header with-border">
+                        @*<h3 class="box-title">Create Campaign</h3>*@
+                        <input type="submit" value="Create" class="btn btn-primary" data-toggle="tooltip" title="Create new Campaign" />
+                        @*<a href="#" class="uppercase" data-toggle="modal" data-target="#new-candidat-modal" style="padding-left: 4px">Add New Candidate</a>*@
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new {@class = "text-danger"})
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Id, "Manager", htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-7">
+                                @Html.DropDownList("Id", null, "[--Please select--]", htmlAttributes: new {@class = "form-control"})
+                                @Html.ValidationMessageFor(model => model.Id, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Name, "Campaign name", htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-7">
+                                @Html.TextBoxFor(model => model.Name, new {@class = "form-control"})
+                                @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.StartDate, htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    @Html.EJ().DatePickerFor(model => model.StartDate).Locale("fr-FR").DateFormat("dd/MM/yyyy").Value(DateTime.Now.ToShortDateString()).Width("100%").MinDate(@ViewBag.MinDateDay)
+                                    @*@Html.EJ().DatePickerFor(model => model.StartDate).Locale("fr-FR").DateFormat("dd/MM/yyyy").Value(DateTime.Now.ToShortDateString()).Width("100%")*@
+                                </div>
+                                @Html.ValidationMessageFor(model => model.StartDate, "", new {@class = "text-danger"})
+                            </div>
+                            @Html.LabelFor(model => model.EndDate, htmlAttributes: new {@class = "control-label col-md-1"})
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    @Html.EJ().DatePickerFor(model => model.EndDate).Locale("fr-FR").DateFormat("dd/MM/yyyy").Value(DateTime.Now.ToShortDateString()).Width("100%").MinDate(@ViewBag.MinDateDay)
+                                    @*@Html.EJ().DatePickerFor(model => model.EndDate).Locale("fr-FR").DateFormat("dd/MM/yyyy").Value(DateTime.Now.ToShortDateString()).Width("100%")*@
+                                </div>
+                                @Html.ValidationMessageFor(model => model.EndDate, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IdCustomer, "Customer", htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-7">
+                                @Html.DropDownList("IdCustomer", null, "[--Please select--]", htmlAttributes: new {@class = "form-control"})
+                                @Html.ValidationMessageFor(model => model.IdCustomer, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IdQuestionnaire, "Questionnaire", htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-7">
+                                @Html.DropDownList("IdQuestionnaire", null, "[--Please select--]", htmlAttributes: new {@class = "form-control"})
+                                @Html.ValidationMessageFor(model => model.IdQuestionnaire, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ConsultantUsers, "Consultant", new {@class = "control-label col-md-2"})
+                            </div>
+                            <div class="editor-field">
+                                <div class="col-md-7">
+                                    @Html.ListBox("ConsultantUsers", null, new {@class = "form-control"})
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Candidates, "Candidates", new { @class = "control-label col-md-2" })
+                            </div>
+                            <div class="editor-field">
+                                <div class="col-md-7">
+                                    @Html.ListBox("Candidates", null, new { @class = "form-control" })
+                                    @*<a href="#" class="uppercase" data-toggle="modal" data-target="#new-candidat-modal">Add New Candidate</a>*@
+                                @*</div>
+                            </div>
+                        </div>*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Description, htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-7">
+                                @Html.TextAreaFor(model => model.Description, 5, 80, new {@class = "form-control"})
+                                @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Comment, htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-7">
+                                @Html.TextAreaFor(model => model.Comment, 5, 80, new {@class = "form-control"})
+                                @Html.ValidationMessageFor(model => model.Comment, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Status, htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-7">
+                                @Html.EnumDropDownListFor(model => model.Status, htmlAttributes: new {@class = "form-control"})
+                                @Html.ValidationMessageFor(model => model.Status, "", new {@class = "text-danger"})
+                            </div>
+                        </div>
+
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <input type="submit" value="Create" class="btn btn-primary"/>
+                        @Html.ActionLink("Cancel", "Index", "Home", null, new {@class = "btn btn-default"})
+                    </div><!-- /.box-footer -->
+                </form>
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/ej")
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#Candidates').multiselect({ includeSelectAllOption: true, disableIfEmpty: true, enableCaseInsensitiveFiltering: true });
+            $('#Candidates').multiselect("disable");
+            $('#ConsultantUsers').multiselect({ includeSelectAllOption: true, disableIfEmpty: true, enableCaseInsensitiveFiltering: true });
+            $('button.multiselect').parent().width('100%');
+        });
+    </script>
+
+    <!-- Change the active in the left side menu -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('ul.sidebar-menu > li').removeClass('active');
+            $('ul.sidebar-menu > li > a[href="/Campaigns"]').parent().addClass('active');
+        });
+    </script>
+
+    @*<script type="text/javascript">
+        function selectedStartDate(sender) {
+            var selDate = new Date(sender.value); // mentions the selected date.
+            var minDatepicker = $("#EndDate").data("ejDatePicker");// creating DatePicker object
+            minDatepicker.setModel({ "minDate": selDate });// setting minDate property through setModel of DatePicker object.
+        }
+
+        function selectedEndDate(sender) {
+            var selDate = new Date(sender.value);
+            var maxDatepicker = $("#StartDate").data("ejDatePicker");// creating DatePicker object
+            maxDatepicker.setModel({ "maxDate": selDate });// setting maxDate property through setModel of DatePicker object.
+        }
+    </script>*@
+    @*Add candidate AJAX*@
+    @*<script type ="text/javascript">
+        $(document).ready(function () {
+
+            $('#candidat-add').click(function () {
+                if (!$("#candiform").validate()) {
+                    alert("ERROR");
+                    return false;
+                }
+                
+                var arraycandi = [$("#FirstName").val(), $("#LastName").val(), $("#PhoneNumber").val(), $("#EmailAddress").val(), $("#modalcust").val(), $("#IdGroup").val(), $("#modalcom").val(), $("#Function").val()];
+                $.ajax({
+                    url: '@Url.Action("AddCandidatAjax", "Campaigns")',
+                    contentType: 'application/json;',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: JSON.stringify(arraycandi),
+                    success: function (result) {
+                        if (result.message != "error") {
+                            $('#new-candidat-modal').modal('hide').find('form')[0].reset();
+                            $('#Candidates').append(new Option(result.name, result.id));
+                            window.location.reload();
+                        }
+                        else {
+                            alert("An error occured, please retry in a few moment.");
+                        }
+                    }
+                });
+            });
+        });
+</script>*@
+}

@@ -1,0 +1,183 @@
+﻿@using System.Data.Entity
+@using Octant.Controllers
+@using IdentitySample.Models
+@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octant - @ViewBag.Title</title>
+    @Styles.Render("~/FL/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+</head>
+<body class="skin-blue sidebar-mini">
+    <div class="wrapper">
+        @if (Request.IsAuthenticated)
+        {
+            var db = new ApplicationDbContext();
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            <header class="main-header">
+                <!-- Logo -->
+                <a href="@Url.Action("Index", "Home")" class="logo">
+                    <img src="~/Content/fl/img/octantlogo1.png" alt="OctantLogo" style="width:80%;" class="img-responsive">
+                    @*<span class="logo-mini"><b>O</b>C</span>
+                    <span class="logo-lg"><b>O</b>CTANT</span>*@
+                </a>
+                <!-- Header Navbar -->
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <!-- Sidebar toggle button-->
+                    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                        <span class="sr-only">Toggle navigation</span>
+                    </a>
+                    <!-- Navbar Right Menu -->
+                    <div class="navbar-custom-menu">
+                        <ul class="nav navbar-nav">
+                            <!-- User Account -->
+                            <li class="dropdown user user-menu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <img src="@ImageController.GetImage("Users", user.Id)" class="user-image" alt="User Image" />
+                                    <span class="hidden-xs">@user.FirstName @user.LastName</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <!-- User image -->
+                                    <li class="user-header">
+                                        <img src="@ImageController.GetImage("Users", user.Id)" class="img-circle" alt="User Image" />
+                                        <p>
+                                            @user.FirstName @user.LastName
+                                            @foreach (IdentityUserRole r in @user.Roles)
+                                            {
+                                                <small>@db.Roles.Find(r.RoleId).Name</small>
+                                            }
+                                            @{ var userid = User.Identity.GetUserId();}
+                                            <small>@db.Users.Where(u => u.Id == userid).Include(u => u.Firm).FirstOrDefault().Firm.Name </small>
+                                        </p>
+                                    </li>
+                                    <!-- Menu Footer-->
+                                    <li class="user-footer">
+                                        <div class="pull-left">
+                                            <a href="@Url.Action("Index", "Manage")" class="btn btn-primary btn-flat">Profile</a>
+                                        </div>
+                                        <div class="pull-right">
+                                            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutform" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <a href="javascript:document.getElementById('logoutform').submit()" class="btn btn-primary btn-flat">Log Out</a>
+                                            }
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="about-menu">
+                                <a href="@Url.Action("About", "Home")"><i class="ion ion-ios-information-outline"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </header>
+            <!-- Left side column -->
+            <aside class="main-sidebar">
+                <!-- Sidebar -->
+                <section class="sidebar">
+                    <!-- Sidebar user panel -->
+                    <div class="user-panel">
+                        <div class="pull-left image">
+                            <img src="@ImageController.GetImage("Users", user.Id)" class="img-circle" alt="User Image" />
+                        </div>
+                        <div class="pull-left info">
+                            <p>@user.FirstName @user.LastName</p>
+                            <a href="#" id="connectivity"><i class="fa fa-circle text-success"></i> <span>Online</span></a>
+                        </div>
+                    </div>
+                    <!-- Sidebar menu -->
+                    <ul class="sidebar-menu">
+                        <li class="header">NAVIGATION</li>
+                        <li class="active"><a href="@Url.Action("Index", "Home")"><i class="fa fa-home"></i> <span>Home</span></a></li>
+                        @*<li><a href="@Url.Action("Index", "Campaigns")"><i class="fa fa-book"></i> <span>Campaigns</span></a></li>*@
+                        @*<li><a href="@Url.Action("Index", "Interviews")"><i class="fa fa-comments"></i> <span>Interviews</span></a></li>*@
+                        <li><a href="@Url.Action("Index", "Questionnaires")"><i class="fa fa-sort-amount-desc"></i> <span>Questionnaires</span></a></li>
+                        <li><a href="@Url.Action("Index", "Calendar")"><i class="fa fa-calendar"></i> <span>Calendar</span></a></li>
+                        @if (User.IsInRole("Manager"))
+                        {
+                            <li class="header">MANAGEMENT</li>
+                            <li><a href="@Url.Action("Index", "UsersAdmin")"><i class="fa fa-users"></i> <span>Users Management</span></a></li>
+                            @*<li><a href="@Url.Action("Index", "Firms")"><i class="fa fa-suitcase"></i> <span>Firms Management</span></a></li>*@
+                            <li><a href="@Url.Action("Index", "Customers")"><i class="fa fa-building-o"></i> <span>Customers Management</span></a></li>
+                            <li><a href="@Url.Action("Index", "Candidates")"><i class="ion ion-ios-personadd-outline"></i> <span>Candidates Management</span></a></li>
+                            <li><a href="@Url.Action("Index", "Groups")"><i class="ion ion-pie-graph"></i> <span>Groups Management</span></a></li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="header">ADMINISTRATION</li>
+                            <li><a href="@Url.Action("Index", "UsersAdmin")"><i class="fa fa-users"></i> <span>Users Management</span></a></li>
+                            <li><a href="@Url.Action("Index", "Firms")"><i class="fa fa-suitcase"></i> <span>Firms Management</span></a></li>
+                            <li><a href="@Url.Action("Index", "Customers")"><i class="fa fa-building-o"></i> <span>Customers Management</span></a></li>
+                            <li><a href="@Url.Action("Index", "Groups")"><i class="ion ion-pie-graph"></i> <span>Groups Management</span></a></li>
+
+                            <li class="treeview">
+                                <a href="#">
+                                    <i class="fa fa-database"></i> <span>Database Tables</span>
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </a>
+                                <ul class="treeview-menu">
+                                    <li><a href="@Url.Action("Index", "RolesAdmin")"><i class="fa fa-circle-o"></i> RolesAdmin</a></li>
+                                    <li><a href="@Url.Action("Index", "Industries")"><i class="fa fa-circle-o"></i> Industries</a></li>
+                                    <li><a href="@Url.Action("Index", "Customers")"><i class="fa fa-circle-o"></i> Customers</a></li>
+                                    <li><a href="@Url.Action("Index", "Campaigns")"><i class="fa fa-circle-o"></i> Campaigns</a></li>
+                                    <li><a href="@Url.Action("Index", "Interviews")"><i class="fa fa-circle-o"></i> Interviews</a></li>
+                                    <li><a href="@Url.Action("Index", "Candidates")"><i class="fa fa-circle-o"></i> Candidates</a></li>
+                                    <li><a href="@Url.Action("Index", "Standards")"><i class="fa fa-circle-o"></i> Standards</a></li>
+                                    <li><a href="@Url.Action("Index", "Frameworks")"><i class="fa fa-circle-o"></i> Frameworks</a></li>
+                                    <li><a href="@Url.Action("List", "Questionnaires")"><i class="fa fa-circle-o"></i> Questionnaires</a></li>
+                                    <li><a href="@Url.Action("Index", "Roles")"><i class="fa fa-circle-o"></i> Roles</a></li>
+                                    <li><a href="@Url.Action("Index", "Nodes")"><i class="fa fa-circle-o"></i> Nodes</a></li>
+                                    <li><a href="@Url.Action("Index", "Questions")"><i class="fa fa-circle-o"></i> Questions</a></li>
+                                    <li><a href="@Url.Action("Index", "Answers")"><i class="fa fa-circle-o"></i> Answers</a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </section><!-- /.sidebar -->
+            </aside>
+        }
+
+        <div class="content-wrapper">
+            @RenderBody()
+        </div><!-- /.content-wrapper -->
+
+        @if (Request.IsAuthenticated)
+        {
+            <footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>Version</b> 1.0
+                </div>
+                <span><strong>Copyright</strong> &copy; @DateTime.Now.Year <a href="@Url.Action("Index", "Home")">Octant</a>. All rights reserved.</span>
+            </footer>
+        }
+    </div><!-- ./wrapper -->
+
+        @*<div id="notformobile">
+                Sorry, this web application cannot be displayed. Try using a larger screen device or put the window in fullscreen mode.
+        </div>*@
+    <script type="text/javascript">
+        $(document).ready(function () {
+            window.addEventListener("online", function () {
+                $('#connectivity span').html('Online');
+                $('#connectivity i').removeClass('text-danger').addClass('text-success');
+            }, false);
+            window.addEventListener("offline", function () {
+                $('#connectivity span').html('Offline');
+                $('#connectivity i').removeClass('text-success').addClass('text-danger');
+            }, false);
+        });
+    </script>
+    @Html.EJ().ScriptManager()
+    @Scripts.Render("~/FL/js")
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

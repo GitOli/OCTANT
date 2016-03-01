@@ -1,0 +1,69 @@
+﻿@model IEnumerable<Interview.Answer>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Interview.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Question.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Value)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IntervieweeAnswer)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Comment)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ConsultantComment)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Interview.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Question.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Value)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IntervieweeAnswer)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Comment)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ConsultantComment)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.IdAnswer }) |
+            @Html.ActionLink("Details", "Details", new { id=item.IdAnswer }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.IdAnswer })
+        </td>
+    </tr>
+}
+
+</table>

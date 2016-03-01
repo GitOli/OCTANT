@@ -1,0 +1,49 @@
+﻿@model List<Tuple<Framework.Standard, string>>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            Name
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Version
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td style ="text-align: center">
+            <img src="@item.Item2" width="100" height="100" />
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Item1.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Item1.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Item1.Version)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.Item1.IdStandard }) |
+            @Html.ActionLink("Details", "Details", new { id = item.Item1.IdStandard }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.Item1.IdStandard })
+        </td>
+    </tr>
+}
+
+</table>

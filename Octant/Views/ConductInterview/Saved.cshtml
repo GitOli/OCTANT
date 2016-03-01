@@ -1,0 +1,495 @@
+﻿@using System.Globalization
+@using System.Web.UI.WebControls
+@using IdentitySample.Models
+@using Interview
+@using Framework
+@using Microsoft.Ajax.Utilities
+@using Octant.Controllers
+@using Syncfusion.Olap.Manager
+@model IEnumerable<Answer>
+
+@{
+    ViewBag.Title = "Saved";
+    var db = new ApplicationDbContext();
+    var dba = new ApplicationDbContext();
+}
+
+@Styles.Render("~/FL/pages/conductinterview/saved")
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li><a href="@Url.Action("Index", "Home")">Campaigns</a></li>
+        <li><a href="@Url.Action("Details", "Campaigns", new { id = ViewBag.InterviewIdCampaign })">@ViewBag.InterviewCampaign</a></li>
+        <li><a href="@Url.Action("Saved", "ConductInterview", new { id = ViewBag.InterviewId })">@ViewBag.InterviewName</a></li>
+        <li class="active">Saved</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">@ViewBag.InterviewName</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row interviewdesc">
+                        <div class="col-xs-4 col-xs-offset-1">
+                            <p><label>Campaign :</label> @ViewBag.InterviewCampaign</p>
+                            <p><label>Date :</label> @ViewBag.InterviewDate</p>
+                        </div>
+                        <div class="col-xs-6">
+                            <p><label>Interviewer :</label> @ViewBag.InterviewInterviewer</p>
+                            <p><label>Interviewee :</label> @ViewBag.InterviewInterviewee</p>
+                        </div>
+                        <div class="col-xs-10  col-xs-offset-1">
+                            <p><label>Description :</label> @ViewBag.InterviewDescription</p>
+                            <p><label>Comment :</label> @ViewBag.InterviewComment</p>
+                        </div>
+                    </div>
+                </div><!-- ./box-body -->
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Edit", "ConductInterview", new { idinterview = ViewBag.InterviewId })"><i class="fa fa-comments-o text-success"></i> &nbsp;Continue Interview</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                    <br />
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Word", "Generate", new { id = ViewBag.InterviewId, type = 4 })" data-toggle="tooltip" title="Generate a Word report for your Firm"><i class="fa fa-file-word-o text-primary"></i> &nbsp;Firm</a>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Word", "Generate", new { id = ViewBag.InterviewId, type = 3 })" data-toggle="tooltip" title="Generate a Word report for your Customer"><i class="fa fa-file-word-o text-primary"></i> &nbsp;Customer</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                    <br/>
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Word", "Generate", new { id = ViewBag.InterviewId, type = 4, pdf = true })" data-toggle="tooltip" title="Generate a PDF report for your Firm"><i class="fa fa-file-pdf-o text-danger"></i> &nbsp;Firm</a>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("Word", "Generate", new { id = ViewBag.InterviewId, type = 3, pdf = true })" data-toggle="tooltip" title="Generate a PDF report for your Customer"><i class="fa fa-file-pdf-o text-danger"></i> &nbsp;Customer</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                    <br/>
+
+                    @*Rotativa*@
+                    @*<div class="row">
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("DownloadPDF", "ConductInterview", new { id = ViewBag.InterviewId, isfirm = true })" data-toggle="tooltip" title="Generate a PDF report for your Firm"><i class="fa fa-file-pdf-o text-danger"></i> &nbsp;Firm Report</a>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6 col-xs-12 text-center">
+                            <a class="btn btn-flat btn-block btn-default" href="@Url.Action("DownloadPDF", "ConductInterview", new { id = ViewBag.InterviewId, isfirm = false })" data-toggle="tooltip" title="Generate a PDF report for your Customer"><i class="fa fa-file-pdf-o text-danger"></i> &nbsp;Customer Report</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->*@
+                </div><!-- /.box-footer -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+
+        <div class="col-md-7">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Scores</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-8 col-sm-12">
+                            <table class="table">
+                                <tbody>
+                                @{
+                                    var pnodes = ViewBag.PNodes as List<Node>;
+                                    var fullnodes = ViewBag.FullNodes as List<Node>;
+                                }
+                                @if (pnodes != null && fullnodes != null)
+                                {
+                                    foreach (var pnode in pnodes)
+                                    {
+                                        var subnodes = fullnodes.FindAll(s => s.IdParentNode == pnode.IdNode);
+                                        <tr class="pnode">
+                                            @if (subnodes.Any())
+                                            {
+                                                <td><b>@pnode.Name</b></td>
+                                            }
+                                            else
+                                            {
+                                                <td>@pnode.Name</td>
+                                            }
+
+                                            @{
+                                                var ci = new ConductInterviewController();
+                                                var score = ci.GetPNodeScore(pnode.IdNode, ViewBag.InterviewId);
+                                            }
+                                            <td>
+                                                <div class="progress progress-xs" style="width: 90%; min-width: 180px; margin-top: 10px;">
+                                                    <div class="progress-bar @{
+                                                                                 if (score >= 4)
+                                                                                 {
+                                                                                     @Html.Raw("progress-bar-success")
+                                                                                     ;
+                                                                                 }
+                                                                                 else
+                                                                                 {
+                                                                                     if ((score <= 1))
+                                                                                     {
+                                                                                         @Html.Raw("progress-bar-danger")
+                                                                                         ;
+                                                                                     }
+                                                                                     else
+                                                                                     {
+                                                                                         @Html.Raw("progress-bar-info")
+                                                                                         ;
+                                                                                     }
+                                                                                 }
+                                                                             }" style="width: @((score*100/5).ToString(new CultureInfo("en-US")))%" role="progressbar" aria-valuenow="@Html.DisplayFor(modelItem => score)" aria-valuemin="0" aria-valuemax="5"></div>
+                                                </div>
+                                            </td>
+                                            <td>@score</td>
+                                            @if (subnodes.Any())
+                                            {
+                                                <td><button class="btn btn-box-tool pull-right pnodecollapse"><i class="fa fa-minus"></i></button></td>
+                                            }
+                                        </tr>
+                                        if (subnodes.Any())
+                                        {
+                                            foreach (var subnode in subnodes)
+                                            {
+                                                <tr>
+                                                    <td style="padding-left: 15px;">@subnode.Name</td>
+                                                    @{
+                                                        var nodescore = ((List<Tuple<string, double>>) ViewBag.Nodescore);
+                                                        var subscore = 0.0;
+                                                        if (nodescore != null)
+                                                        {
+                                                            var ns = nodescore.Find(s => s.Item1 == subnode.Name);
+                                                            if (ns != null)
+                                                            {
+                                                                subscore = ns.Item2;
+                                                            }
+                                                        }
+                                                    }
+                                                    <td>
+                                                        <div class="progress progress-xs" style="width: 90%; min-width: 180px; margin-top: 10px;">
+                                                            <div class="progress-bar @{
+                                                                                         if (subscore >= 4)
+                                                                                         {
+                                                                                             @Html.Raw("progress-bar-success")
+                                                                                         }
+                                                                                         else
+                                                                                         {
+                                                                                             @((subscore <= 1) ? Html.Raw("progress-bar-danger") : Html.Raw("progress-bar-info"))
+                                                                                         }
+                                                                                     }" style="width: @((subscore*100/5).ToString(new CultureInfo("en-US")))%" role="progressbar" aria-valuenow="@Html.DisplayFor(modelItem => subscore)" aria-valuemin="0" aria-valuemax="5"></div>
+                                                        </div>
+                                                    </td>
+                                                    <td>@subscore</td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-4 col-sm-12" style="min-width: 230px;">
+                            <input type="text" id="overallscore" value="@Convert.ToInt32(ViewBag.Part)" data-toggle="tooltip" title="@ViewBag.Part" />
+                        </div>
+                    </div>
+                </div><!-- ./box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Custom score comment</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="comment">Comment:</label>
+                        <textarea class="form-control" rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="savecomment">Save comment</button>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.modal -->
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h1 class="box-title">Summary of the interview</h1>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div>
+                        @{ var nodename = "";}
+                        @foreach (var a in Model.Where(a => !string.IsNullOrEmpty(a.IntervieweeAnswer)))
+                        {                       
+                                <div class="isrelevant-@Html.DisplayFor(modelItem => a.Value)">
+                                @if (nodename != a.Question.Node.Name)
+                                {
+                                    <h3>
+                                        <span style="color:rgb(238, 131, 0)">@Html.DisplayFor(modelItem => a.Question.Node.Name)</span><br />
+                                    </h3><hr/>
+                                    nodename = a.Question.Node.Name;
+                                }
+                                @{
+                                    var qident = "";
+                                    if (!string.IsNullOrEmpty(a.Question.Ident))
+                                    {
+                                        qident = a.Question.Ident + " - ";
+                                    }
+                                }
+                                @*<h4 style="color: rgb(31, 73, 125)">Question @a.Question.Ident : </h4>*@<span><b>@qident @Html.DisplayFor(modelItem => a.Question.Name)</b></span><br/><br/>
+                                <h4 style="color: rgb(51, 132, 204)">Answer : </h4>
+                                <span>
+                                    @{
+                                        string[] pa;
+                                        string[] ia;
+                                    }
+                                    @switch (a.Question.AnswerType)
+                                    {
+                                        case AnswerType.Text:
+                                            <span><b>@Html.DisplayFor(modelItem => a.IntervieweeAnswer)</b></span><br /><br />
+                                            break;
+                                        case AnswerType.Integer:
+                                            <span><b>@Html.DisplayFor(modelItem => a.IntervieweeAnswer) / 5</b></span><br /><br />
+                                            break;
+                                        case AnswerType.SingleChoice:
+                                            if (!a.IntervieweeAnswer.IsEmpty())
+                                            {
+                                                pa = a.Question.PossibleAnswer.Split(';');
+                                                <span><b>@Html.DisplayFor(modelItem => pa[int.Parse(a.IntervieweeAnswer) - 1])</b></span><br /><br />
+                                            }
+                                            break;
+                                        case AnswerType.MultipleChoice:
+                                            if (!a.IntervieweeAnswer.IsEmpty())
+                                            {
+                                                pa = a.Question.PossibleAnswer.Split(';');
+                                                ia = a.IntervieweeAnswer.Split(';');
+                                                for (int i = 0; i < pa.Length; i++)
+                                                {
+                                                    if (ia[i] == "true")
+                                                    {
+                                                        <span><b>@Html.DisplayFor(modelItem => pa[i])</b></span><br /><br />
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case AnswerType.Boolean:
+                                            <span><b>@Html.DisplayFor(modelItem => a.IntervieweeAnswer)</b></span><br /><br />
+                                            break;
+                                        case AnswerType.Real:
+                                            <span><b>@Html.DisplayFor(modelItem => a.IntervieweeAnswer)</b></span><br /><br />
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                </span>
+                                @if (!string.IsNullOrEmpty(a.Comment))
+                                {
+                                    <h5>Comment : </h5><span>@Html.DisplayFor(modelItem => a.Comment)</span><br /><br />
+                                }
+                                @if (!string.IsNullOrEmpty(a.ConsultantComment))
+                                {
+                                    <h5>Consultant comment : </h5><span>@Html.DisplayFor(modelItem => a.ConsultantComment)</span><br /><br />
+                                }
+                                <hr />
+                            </div>
+                            }
+                        
+                    </div>
+                </div><!-- ./box-body -->
+            </div><!-- ./box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Interviews"]').parent().addClass('active');
+    });
+</script>
+
+<!-- Collapse sidebar -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('body.sidebar-mini').addClass('sidebar-collapse');
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#overallscore").knob({
+            'min': 0.0,
+            'max': 5.0,
+            'readOnly': true,
+            'fgColor': "#932AB6",
+            'inputColor': "#932AB6",
+            'thickness': "0.2",
+    });
+
+    var customscores = [];
+    var customscore = [];
+    var idinterview = '@ViewBag.InterviewId';
+    var id = 0;
+    var comment = "";
+
+    customscores = @Html.Raw(
+        Json.Encode(
+            ((IEnumerable<CustomScore>)ViewBag.CustomScores).Select(item => new
+            {
+                IdNode = item.IdNode,
+                Value = item.Value,
+                Comment = item.Comment,
+                IdInterview = item.IdInterview
+            })
+        ));
+
+    $('.customscore').change(function (e) {
+        elem = e.target;
+        customscore = [];
+        var idnode = elem.id;
+        customscore.push(idnode, elem.value, idinterview, false);
+
+        sendCustomScores();
+    });
+
+    function openModal(elem, comment) {
+        id = elem.id;
+        $('#myModal').modal('show').find('textarea').attr('id', id).val(comment);
+    };
+
+    $('#savecomment').on('click', function() {
+        var comment = $('#myModal').find('textarea').val();
+        customscore = [];
+        customscore.push(id, comment, idinterview, true);
+        sendCustomScores();
+        $('#myModal').modal('hide');
+    });
+
+    $('.comment').on('click', function() {
+        id = this.id;
+        $('#myModal').modal('show').find('textarea').attr('id', id).val($('#h' + id).val());
+    });
+
+    function sendCustomScores() {
+        if (customscore.length > 0) {
+            var iscomment;
+            var id = customscore[0];
+            var value = customscore[1];
+            if (customscore[3]) {
+                iscomment = customscore[3];
+                comment = customscore[1];
+            }
+
+            $.ajax({
+                url: '@Url.Action("SaveCustomScores", "ConductInterview")',
+                contentType: 'application/json;',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(customscore),
+                success: function (result) {
+                    if (iscomment) {
+                        $('#h' + id).val(comment);
+                    }
+
+                    if (!customscore[3] && !iscomment) {
+                        $('#' + id + ' .progress-bar').attr('aria-valuenow', value);
+                        $('#' + id + ' .progress-bar').width(value * 100 / 5 + '%');
+                        if (value === 5) {
+                            $('#' + id + ' .progress-bar').removeClass('progress-bar-danger').removeClass('progress-bar-info').addClass('progress-bar-success');
+                        }
+                        else {
+                            if (value <= 1) {
+                                $('#' + id + ' .progress-bar').addClass('progress-bar-danger').removeClass('progress-bar-info').removeClass('progress-bar-success');;
+                            }
+                            else {
+                                $('#' + id + ' .progress-bar').removeClass('progress-bar-danger').addClass('progress-bar-info').removeClass('progress-bar-success');;
+                            }
+                        }
+                        $('#overallscore').val(result.average);
+                        $('#overallscore').trigger('change');
+                    }
+                }
+            });
+            customscore = [];
+        }
+    };
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".pnodecollapse").each(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus").parent().parent().parent().nextUntil(".pnode").slideToggle(400);
+        });
+
+        $(".pnodecollapse").click(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus").parent().parent().parent().nextUntil(".pnode").slideToggle(400);
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".summarypnode").each(function() {
+            $(this).nextUntil(".summarypnode").fadeOut(400);
+            $(this).find("i").removeClass("fa-minus").addClass("fa-plus");
+        });
+
+        $('#collapseall').click(function() {
+            $('.summarypnode').each(function() {
+                if ($(this).hasClass("toClose")) {
+                    $(this).nextUntil(".summarypnode").fadeOut(400);
+                    $(this).removeClass("toClose");
+                    $(this).find("i").removeClass("fa-minus").addClass("fa-plus");
+                }
+            });
+        });
+
+        $(".summarypnodecollapse").click(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus");
+            var elem = $(this).parent().parent().parent();
+            if (elem.hasClass("toClose")) {
+                elem.removeClass("toClose").find("i").removeClass("fa-minus").addClass("fa-plus");
+                elem.nextUntil(".summarypnode").fadeOut(400);
+                elem.nextUntil(".summarypnode", ".summarynode").find("i").removeClass("fa-minus").addClass("fa-plus");
+            } else {
+                elem.addClass("toClose").find("i").addClass("fa-minus").removeClass("fa-plus");
+                if (elem.parent().find(".summarynode").length > 0) {
+                    elem.nextUntil(".summarypnode", ".summarynode").fadeIn(400);
+                    elem.nextUntil(".summarypnode", ".summarynode").find("i").removeClass("fa-minus").addClass("fa-plus");
+                } else {
+                    elem.nextUntil(".summarypnode").fadeIn(400);
+                }
+            }
+        });
+
+        $(".summarynodecollapse").click(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus");
+            var elem = $(this).parent().parent().parent();
+            elem.toggleClass("toClose").nextUntil(".summarynode").slideToggle(400);
+        });
+    });
+</script>

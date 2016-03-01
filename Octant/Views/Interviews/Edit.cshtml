@@ -1,0 +1,146 @@
+﻿@using System.Globalization
+@using System.Web.UI.WebControls
+@using IdentitySample.Models
+@using Interview
+@model Interview
+
+@{
+    ViewBag.Title = "Interview " + Model.Name + " Edit";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li><a href="@Url.Action("Details", "Campaigns", new { id = Model.IdCampaign })">Interviews</a></li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Edit Interview</h3>
+                </div><!-- /.box-header -->
+                <form method="post" action="@Url.Action("Edit", "Interviews", new { id = Model.IdInterview })" role="form" class="form-horizontal">
+                    <div class="box-body">
+                        @Html.AntiForgeryToken()
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.IdInterview)
+                        @Html.HiddenFor(model => model.Completion)
+                        @Html.HiddenFor(model => model.IdCampaign)
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IdCampaign, "Campaign", htmlAttributes: new {@class = "control-label col-md-2"})
+                            <div class="col-md-7">
+                                @*@Html.DropDownList("IdCampaign", null, new {@class = "form-control"})*@
+                                @Html.DisplayFor(model => model.Campaign.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @*@Html.ValidationMessageFor(model => model.IdCampaign, "", new {@class = "text-danger"})*@
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                <div class="input-group">
+                                    @{
+                                        var date = "";
+                                        if (Model.Date != null)
+                                        {
+                                            DateTime startdate = DateTime.ParseExact(Model.Date.ToString(), "dd-MM-yy HH:mm:ss", CultureInfo.InvariantCulture);
+                                            date = startdate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+                                        }
+
+                                    }
+                                    @Html.EJ().DatePickerFor(model => model.Date).Value(date).DateFormat("dd/MM/yyyy").Width("100%").MinDate(@ViewBag.MinDateDay)
+                                    @*@Html.EJ().DatePickerFor(model => model.Date).Value(date).DateFormat("dd/MM/yyyy").Width("100%")*@
+                                </div>
+                                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Id, "Consultant", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                @Html.DropDownList("Consultant", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                @Html.TextAreaFor(model => model.Description, 5, 80, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Comment, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                @Html.TextAreaFor(model => model.Comment, 5, 80, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Canceled, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.Canceled)
+                                    @Html.ValidationMessageFor(model => model.Canceled, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Suspended, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.Suspended)
+                                    @Html.ValidationMessageFor(model => model.Suspended, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        @Html.ActionLink("Cancel", "Details", "Campaigns", new {id = Model.IdCampaign}, new { @class = "btn btn-default" })
+                    </div><!-- /.box-footer -->
+                </form>
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/ej")
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#Date").val($("#Date").val().replace(/-/g, '/'));
+        });
+    </script>
+
+    <!-- Change the active in the left side menu -->
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('ul.sidebar-menu > li').removeClass('active');
+            $('ul.sidebar-menu > li > a[href="/Interviews"]').parent().addClass('active');
+        });
+    </script>
+}
+
+

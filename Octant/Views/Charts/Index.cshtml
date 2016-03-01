@@ -1,0 +1,29 @@
+﻿@model List<Framework.Node>
+    <div>
+        @(Html.EJ().Chart("chartcontainer").PrimaryYAxis(pr => pr.Range(ra => ra.Min(1).Max(5).Interval(1)))
+              .CommonSeriesOptions(cr => cr.Type(SeriesType.Radar).EnableAnimation(true).Tooltip(tl => tl.Visible(true)))
+              .Series(se => se.Points(pt =>
+              {
+                  foreach (var node in ViewBag.Nodes)
+                  {
+                      pt.X(node.Name).Y(3).Add();
+                  }
+                  //pt.X("North").Y(42).Add();
+                  //pt.X("NorthEast").Y(28).Add();
+                  //pt.X("East").Y(40).Add();
+                  //pt.X("SouthEast").Y(45).Add();
+                  //pt.X("South").Y(20).Add();
+                  //pt.X("SouthWest").Y(40).Add();
+                  //pt.X("West").Y(25).Add();
+                  //pt.X("NorthWest").Y(40).Add();
+              }).ZOrder(2).Marker(mr => mr.Visible(true)).Name("Line").Add())
+                 .CanResize(true)
+                 .Load("loadTheme")
+                 .Size(sz => sz.Height("600"))
+                 .Legend(lg => lg.Visible(true))
+        )
+        <script>
+            $("#controlarea").css("visibility", "visible");
+        </script>
+    </div>
+@Scripts.Render("~/Scripts/ej")

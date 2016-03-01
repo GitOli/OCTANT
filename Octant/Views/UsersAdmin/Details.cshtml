@@ -1,0 +1,48 @@
+﻿@model IdentitySample.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details.</h2>
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Firm.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Firm.Name)
+        </dd>
+    </dl>
+</div>
+<h4>User profile</h4>
+@if (ViewBag.RoleNames.Count == 0)
+{
+    <hr />
+    <p>No profile found for this user.</p>
+}
+<table class="table">
+    @foreach (var item in ViewBag.RoleNames)
+    {
+        <tr>
+            <td>
+                @item
+            </td>
+        </tr>
+    }
+</table>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Cancel", "Index")
+</p>
+
+
+

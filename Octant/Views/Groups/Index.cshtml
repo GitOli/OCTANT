@@ -1,0 +1,93 @@
+﻿@using IdentitySample.Models
+@using Microsoft.AspNet.Identity
+@model IEnumerable<Interview.Group>
+
+@{
+    ViewBag.Title = "Groups Management";
+
+    var db = new ApplicationDbContext();
+    var user = db.Users.Find(User.Identity.GetUserId());
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li class="active">Groups Management</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    @*<h3 class="box-title">Groups Management @(User.IsInRole("Manager") ? "for Group " + user.Group.Name : "")</h3>*@
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 col-xs-6">
+                            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                            {
+                                <a href="@Url.Action("Create", "Groups")" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new Group"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                            }
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Name)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Campaign.Name)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Description)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Comment)
+                                            </td>
+                                            @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                                            {
+                                                <td class="campagn-buttons">
+                                                    <a href="@Url.Action("Edit", "Groups", new {id = item.IdGroup})" class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Edit Group"><i class="ion ion-ios-compose-outline"></i></a>
+                                                    <a href="@Url.Action("Delete", "Groups", new {id = item.IdGroup})" class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Delete Group"><i class="ion ion-ios-trash-outline"></i></a>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                    <div class="box-footer">
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-6">
+                                <a href="@Url.Action("Create", "Groups")" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new Group"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- /.box-footer -->
+                }
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Groups"]').parent().addClass('active');
+    });
+</script>

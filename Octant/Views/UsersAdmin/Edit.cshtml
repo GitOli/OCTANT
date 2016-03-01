@@ -1,0 +1,151 @@
+﻿@model IdentitySample.Models.EditUserViewModel
+
+@{
+    ViewBag.Title = "Users Edit";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li><a href="@Url.Action("Index", "UsersAdmin")">Users</a></li>
+        <li><a href="@Url.Action("Details", "UsersAdmin", new { id = Model.Id })">@Model.FirstName @Model.LastName</a></li>
+        <li class="active">Edit</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Edit User</h3>
+                </div><!-- /.box-header -->
+                <form method="post" action="@Url.Action("Edit", "UsersAdmin", new { id = Model.IdFirm })" role="form" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="box-body">
+
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        @Html.HiddenFor(model => model.Id)
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IdFirm, "Firm", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    @Html.DropDownList("IdFirm", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.IdFirm, "", new { @class = "text-danger" })
+                                }
+                                else
+                                {
+                                    @Html.Raw("<span style=\"position: relative; top: 7px;\">" + ViewBag.FirmName + "</span>")
+                                    @Html.HiddenFor(model => model.IdFirm, new { id = "Firm", Value = Model.IdFirm })
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                @Html.DisplayFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                                @*@Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })*@
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-7">
+                                <div class="checkbox">
+                                    @Html.EditorFor(model => model.IsActive)
+                                    @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<div class="form-group">
+                            @Html.Label("Profile", new { @class = "control-label col-md-2" })
+                            <span class=" col-md-7">
+                                @foreach (var item in Model.RolesList)
+                                {
+                                    if (item.Text == "Admin" && !User.IsInRole("Admin"))
+                                    {
+                                        
+                                    }
+                                    else
+                                    {
+                                        <input type="checkbox" name="SelectedRole" value="@item.Value" checked="@item.Selected" class="checkbox-inline" />
+                                        @Html.Label(item.Value, new { @class = "control-label" })
+                                        @Html.Raw("&nbsp;&nbsp;")
+                                    }
+
+                                }
+                            </span>
+                        </div>*@
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">
+                                Profile
+                            </label>
+                            <div class="col-md-7">
+                                @foreach (var item in (ViewBag.RoleId as MultiSelectList))
+                                {
+                                    <input type="checkbox" name="SelectedRoles"
+                                           value="@item.Value" class="checkbox-inline" checked="@item.Selected" />
+                                    @Html.Label(item.Value, new { @class = "control-label" })
+                                    @Html.Raw("&nbsp;&nbsp;")
+                                }
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="control-label col-md-2">Image</div>
+                            <div class="col-md-7">
+                                <img src="@ViewData["image"]" width="100" height="100" class="img-responsive"/>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-7">
+                                    <input type="file" name="fileBase" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- /.box-body -->
+                    <div class="box-footer">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+                    </div><!-- /.box-footer -->
+                </form>
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <!-- Change the active in the left side menu -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('ul.sidebar-menu > li').removeClass('active');
+            $('ul.sidebar-menu > li > a[href="/UsersAdmin"]').parent().addClass('active');
+        });
+    </script>
+}

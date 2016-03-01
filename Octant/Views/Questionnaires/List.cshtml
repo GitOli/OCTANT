@@ -1,0 +1,103 @@
+﻿@using IdentitySample.Models
+@using Framework
+@model IEnumerable<Questionnaire>
+
+@{
+    ViewBag.Title = "Questionnaires";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li class="active">Questionnaires</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Questionnaires</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Name)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Description)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Framework.Name)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Language)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.IsDraft)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.AutoScore)
+                                    </th>
+                                    <th></th>
+                                </tr>
+
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Framework.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Language)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.IsDraft)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.AutoScore)
+                                        </td>
+                                        <td>
+                                            @Html.ActionLink("Edit", "Edit", new { id = item.IdQuestionnaire }) |
+                                            @Html.ActionLink("Details", "Details", new { id = item.IdQuestionnaire }) |
+                                            @Html.ActionLink("Delete", "Delete", new { id = item.IdQuestionnaire })
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-3 col-xs-6">
+                            <a href="@Url.Action("Create", "Questionnaires")" class="btn btn-block btn-primary btn-flat"><i class="ion ion-ios-plus-empty"></i> Create new questionnaire</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.box-footer -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Questionnaires"]').parent().addClass('active');
+    });
+</script>

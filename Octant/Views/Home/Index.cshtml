@@ -1,0 +1,194 @@
+﻿@using IdentitySample.Models
+@using Interview
+@model IEnumerable<Campaign>
+@if (Request.IsAuthenticated)
+{
+    ViewBag.Title = "Home";
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+            <li class="active">Home</li>
+        </ol>
+    </section>
+    <!-- Main content -->
+    <section class="content"> 
+        <!-- Info boxes -->
+        <div class="row">
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="ion-ios-speedometer-outline"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Firm's Campaigns to start</span>
+                        <span class="info-box-number big">@ViewBag.Campaign1</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="ion-ios-speedometer-outline"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Firm's Campaigns in progress</span>
+                        <span class="info-box-number big">@ViewBag.Campaign2</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <!-- fix for small devices only -->
+            <div class="clearfix visible-sm-block"></div>
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="ion-ios-speedometer-outline"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Firm's Campaigns ended</span>
+                        <span class="info-box-number big">@ViewBag.Campaign3</span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        @*<h3 class="box-title">Campaigns</h3>*@
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                        @{
+                            if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                            {
+                                <div class="row">
+                                    <div class="col-sm-3 col-xs-6">
+                                        <a href="@Url.Action("Create", "Campaigns")" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new Campaign"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                                    </div><!-- /.col -->
+                                </div><!-- /.row -->
+                            }
+                        }
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <span class="filter-customer">Filter by customer : </span>
+                                @Html.DropDownList("CustomersList", new SelectList(ViewBag.Customers, "IdCustomer", "Name"), "All Customers", new { @style = "width: 33%;" })
+                                <div class="box-tools pull-right">
+                                    <input type="checkbox" class="showended" data-toggle="tooltip" title="Click here to view or hide completed campaigns"><span>  Show ended</span>
+                                </div>
+                                <table class="table">
+                                    <tbody>
+                                        @foreach (Campaign c in Model)
+                                        {
+                                            <tr data-cust="@c.IdCustomer" @{if (c.Completion == 100) { @Html.Raw("style='display:none' class='ended'"); }}>
+                                                <td>
+                                                    <span class="campagn-name">@Html.DisplayFor(modelItem => c.Name)</span>
+                                                    <br />
+                                                    <span class="campagn-dates"><label>Start date:</label> @Html.DisplayFor(modelItem => c.StartDate)</span>
+                                                    <br />
+                                                    <span class="campagn-dates"><label>End date:</label> @Html.DisplayFor(modelItem => c.EndDate)</span>
+                                                </td>
+                                                <td class="campagn-infos">
+                                                    <span class="campagn-customer"><label>Manager:</label> @Html.DisplayFor(modelItem => c.Id)</span>
+                                                    <br />
+                                                    <span class="campagn-customer"><label>Customer:</label> @Html.DisplayFor(modelItem => c.Customer.Name)</span>
+                                                    <br/>
+                                                    <span class="campagn-questionnaire"><label>Questionnaire :</label> @Html.DisplayFor(modelItem => c.Questionnaire.Name)</span>
+                                                    <br />
+                                                    <!--span class="campagn-creator"><label>Creator:</label> @*Html.DisplayFor(modelItem => c.ApplicationUsers.FullName)*@</span-->
+                                                    <span class="campagn-creator"><label>Coverage:</label> @Html.DisplayFor(modelItem => c.Coverage)%</span>
+                                                </td>
+                                                <td>
+                                                    <a href="@Url.Action("Details", "Campaigns", new { id = c.IdCampaign })">
+                                                        @{
+                                                            int d = 0;
+                                                            int n = 0;
+                                                            foreach (Interview i in (ViewBag.Interviews as List<Interview>).Where(x => x.IdCampaign == c.IdCampaign && !x.Deleted))
+                                                            {
+                                                                if (i.Completion == 100)
+                                                                {
+                                                                    d++;
+                                                                }
+                                                                n++;
+                                                            }
+                                                            int p = c.Completion != null ? (int)c.Completion : 0;
+                                                            <div class="info-box @{ if (p == 0) { @Html.Raw("bg-red"); } else { if (p == 100) { @Html.Raw("bg-green"); } else { @Html.Raw("bg-aqua"); } } }">
+                                                                <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
+                                                                <div class="info-box-content">
+                                                                    <span class="info-box-text">Interviews</span>
+                                                                    <span class="info-box-number">@d<small> / @n</small></span>
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar" style="width: @p%"></div>
+                                                                    </div>
+                                                                    <span class="progress-description">Completion: @Html.DisplayFor(modelItem => c.Completion)% </span>
+                                                                </div><!-- /.info-box-content -->
+                                                            </div><!-- /.info-box -->
+                                                        }
+                                                    </a>
+                                                </td>
+                                                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                                                {
+                                                    <td class="campagn-buttons">
+                                                        <a href="@Url.Action("Edit", "Campaigns", new { id = c.IdCampaign })" class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Edit"><i class="ion ion-ios-compose-outline"></i></a>
+                                                        <a href="@Url.Action("Delete", "Campaigns", new { id = c.IdCampaign })" class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Delete"><i class="ion ion-ios-trash-outline"></i></a>
+                                                    </td>
+                                                }
+                                                <td class="campagn-access">
+                                                    <a href="@Url.Action("Details", "Campaigns", new { id = c.IdCampaign })" class="btn btn-block btn-warning btn-flat" data-toggle="tooltip" title="See Details, Interviews, etc."><i class="ion ion-ios-search"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- ./box-body -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                    {
+                        <div class="box-footer">
+                            <div class="row">
+                                <div class="col-sm-3 col-xs-6">
+                                    <a href="@Url.Action("Create", "Campaigns")" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new Campaign"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                                </div><!-- /.col -->
+                            </div><!-- /.row -->
+                        </div><!-- /.box-footer -->
+                    }
+                </div><!-- /.box -->
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </section><!-- /.content -->
+
+<!-- Change the list of campaigns by the dropdown filter -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#CustomersList').change(function () {
+            var custId = $(this).val();
+            if (custId == "") {
+                $('table tr').fadeIn(400);
+            }
+            else {
+                $('table tr').not('[data-cust="' + custId + '"]').fadeOut(400, function () {
+                    $('table tr[data-cust="' + custId + '"]').fadeIn(400);
+                });
+                $('table tr[data-cust="' + custId + '"]').fadeIn(400);
+            }
+        });
+    });
+</script>
+
+<!-- Change the active in the left side menu -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('ul.sidebar-menu > li').removeClass('active');
+            $('ul.sidebar-menu > li > a[href="/"]').parent().addClass('active');
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".showended").click(function () {
+                if ($(".ended").length > 0) {
+                    $(".ended").slideToggle();
+                }
+            });
+        });
+    </script>
+
+}

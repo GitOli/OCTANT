@@ -1,0 +1,20 @@
+﻿/* -------------------------------------------
+    ConductInterview / Saved : CSS
+------------------------------------------- */
+
+.interviewdesc label {
+    margin-right: 6px;
+    font-size: 12px;
+    font-weight: 300;
+    color: grey;
+}
+
+.answers-legend td {
+    font-weight: 400;
+}
+
+
+
+.isrelevant-0 {
+    color: #A7A7A7;
+}

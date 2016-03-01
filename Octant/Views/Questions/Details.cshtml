@@ -1,0 +1,78 @@
+﻿@model Framework.Question
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Question</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AnswerType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AnswerType)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PossibleAnswer)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PossibleAnswer)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Node.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Node.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Role)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Role.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsFactor)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsFactor)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsRelevant)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsRelevant)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.IdQuestion }) |
+    @Html.ActionLink("Cancel", "Index")
+</p>

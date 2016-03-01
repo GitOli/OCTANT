@@ -1,0 +1,180 @@
+﻿@using System.Data.Entity
+@using IdentitySample.Models
+@using Framework
+@model List<Tuple<Standard, string>>
+
+@{
+    ViewBag.Title = "Questionnaires";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li class="active">Questionnaires</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    @foreach (var s in Model)
+    {
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><img src="@s.Item2" class="img-circle" alt="Standard Image" height="30" /> &nbsp; @s.Item1.Name</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        @foreach (Framework f in s.Item1.Frameworks)
+                        {
+                        <div class="col-lg-9 col-md-12 col-sm-12">
+                            <div class="box box-success">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title" style="font-size: 16px;"> @f.Name</h3>
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                    </div>
+                                </div><!-- /.box-header -->
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table"><!-- Table Questionnaire -->
+                                                <tbody>
+                                                    @{ var db = new ApplicationDbContext(); }
+                                                    @foreach (Questionnaire q in new ApplicationDbContext().Questionnaires.Include("Questions").Where(y => y.IdFramework == f.IdFramework))
+                                                    {
+                                                        <tr class="questionnaire" style="border-left: 3px solid #3C8DBC;">
+                                                            <td>
+                                                                <h5>
+                                                                    @q.Name  @if (q.AutoScore)
+                                                                    {
+                                                                        <span class="label label-warning" style="margin-left: 15px">Auto-scored</span>
+                                                                    }
+                                                                </h5>
+                                                            </td>
+                                                            <td>@q.Questions.Count questions</td>
+                                                            <td><button class="btn btn-box-tool pull-right questcollapse"><i class="fa fa-plus"></i></button></td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <div class="toCollapse" style="display: none">
+                                                                    <table class="table" style="width: 100%; border: 0;"><!-- Table Principal Nodes -->
+                                                                        <tbody>
+                                                                            @{var fullnodes = db.Nodes.Where(x => x.IdQuestionnaire == q.IdQuestionnaire).ToList();
+                                                                            if (fullnodes.Any())
+                                                                            {
+                                                                                var root = fullnodes.FirstOrDefault(r => r.IsRoot);
+                                                                                if (root != null)
+                                                                                {
+                                                                                    var nodes = fullnodes.Where(n => !n.IsRoot && n.IdParentNode != root.IdNode).ToList();
+                                                                                    var pnodes = fullnodes.FindAll(p => p.IdParentNode == root.IdNode).ToList();
+                                                                                    foreach (var pnode in pnodes)
+                                                                                    {
+                                                                                        <tr class="pnode" style="border-left: 3px solid darkorange;">
+                                                                                            <td style="padding-left: 20px">
+                                                                                                <h6>@pnode.Name</h6>
+                                                                                            </td>
+                                                                                            <td><button class="btn btn-box-tool pull-right pnodecollapse"><i class="fa fa-plus"></i></button></td>
+                                                                                        </tr>
+                                                                                        <tr style="display: none">
+                                                                                            <td>
+                                                                                                <table class="table" style="width: 100%; border: 0;"><!-- Table Nodes -->
+                                                                                                @if (db.Questions.Any(x => x.IdNode == pnode.IdNode))
+                                                                                                {
+                                                                                                    var questions = db.Questions.Where(quest => quest.IdNode == pnode.IdNode);
+                                                                                                    foreach (var question in questions)
+                                                                                                    {
+                                                                                                        <tr>
+                                                                                                            <td style="padding-left: 40px">
+                                                                                                                <span>@question.Name</span>
+                                                                                                            </td>
+                                                                                                        </tr>
+                                                                                                    }
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    foreach (var node in nodes.Where(n => n.IdParentNode == pnode.IdNode))
+                                                                                                    {
+                                                                                                        <tr class="tnode" style="border-left: 3px solid red;">
+                                                                                                          <td>
+                                                                                                              <h6 style="padding-left: 20px">@node.Name</h6>
+                                                                                                          </td>
+                                                                                                          <td><button class="btn btn-box-tool pull-right nodecollapse"><i class="fa fa-plus"></i></button></td>
+                                                                                                        </tr>
+                                                                                                        var questions = db.Questions.Where(quest => quest.IdNode == node.IdNode);
+                                                                                                        foreach (var question in questions)
+                                                                                                        {
+                                                                                                            <tr style="display: none;">
+                                                                                                                <td style="padding-left: 40px">
+                                                                                                                    <span>@question.Name</span>
+                                                                                                                </td>
+                                                                                                            </tr>
+                                                                                                        }
+                                                                                                     }
+                                                                                                  }  
+                                                                                                </table>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div><!-- /.row -->
+                                </div><!-- ./box-body -->
+                            </div><!-- /.box -->
+                        </div><!-- /.col -->
+                        }
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    }
+</section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Questionnaires"]').parent().addClass('active');
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".questcollapse").click(function() {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus").parent().parent().parent().next().find(".toCollapse").slideToggle();
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".pnodecollapse").click(function () {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus").parent().parent().parent().nextUntil(".pnode").slideToggle();
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".nodecollapse").click(function () {
+            $(this).find("i").toggleClass("fa-minus").toggleClass("fa-plus").parent().parent().parent().nextUntil(".tnode").slideToggle();
+        });
+    });
+</script>

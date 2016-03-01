@@ -1,0 +1,104 @@
+﻿@using IdentitySample.Models
+@using Interview
+@model IEnumerable<Interview>
+
+@{
+    ViewBag.Title = "Interviews";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li class="active">Interviews</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Interviews</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tbody>
+                                    @foreach (Interview i in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="interview-name">@Html.DisplayFor(m => i.Name)</span>
+                                                <br />
+                                                <span class="interview-campaign"><label>Campaign :</label> @Html.DisplayFor(m => i.Campaign.Name)</span>
+                                            </td>
+                                            <td>
+                                                <span class="interview-date"><label>Date :</label> @Html.DisplayFor(m => i.Date)</span>
+                                                <br />
+                                                <span class="interview-creator"><label>Consultant :</label> @Html.DisplayFor(m => i.ApplicationUsers.FullName)</span>
+                                            </td>
+                                            <td class="interview-status">
+                                                <label>Status :</label>
+                                                @if (i.Canceled)
+                                                {
+                                                    <span class="text-red"> Canceled</span>
+                                                }
+                                                else
+                                                {
+                                                    if (i.Suspended)
+                                                    {
+                                                        <span class="text-yellow"> Suspended</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-info"> Normal</span>
+                                                    }
+                                                }
+                                                <br />
+                                                <label>Completion :</label> <span>@Html.DisplayFor(m => i.Completion)%</span>
+                                                <div class="progress progress-xxs" style="width: 90%;">
+                                                    <div class="progress-bar @{ if (i.Completion == 100) { @Html.Raw("progress-bar-success"); } else { @Html.Raw("progress-bar-info"); } }" style="width: @i.Completion%" role="progressbar" aria-valuenow="@i.Completion" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </td>
+                                            <td class="interview-buttons">
+                                                <a href="@Url.Action("Edit", "Interviews", new { id = i.IdInterview })" class="btn btn-block btn-default btn-flat"><i class="ion ion-ios-compose-outline"></i></a>
+                                                <a href="@Url.Action("Delete", "Interviews", new { id = i.IdInterview })" class="btn btn-block btn-default btn-flat"><i class="ion ion-ios-trash-outline"></i></a>
+                                            </td>
+                                            <td class="interview-access">
+                                                <a href="@Url.Action(((i.Completion == 0) ? "Index" : "Edit"), "ConductInterview", new { IdInterview = i.IdInterview })" class="btn @((i.Completion == 0) ? "btn-danger" : ((i.Completion == 100) ? "btn-success" : "btn-info")) btn-flat"><i class="ion ion-ios-chatboxes-outline"></i></a> &nbsp;
+                                                <a href="@Url.Action("Saved", "ConductInterview", new { Id = i.IdInterview })" class="btn btn-warning btn-flat @((i.Completion == 0) ? "disabled" : "")"><i class="ion ion-ios-search"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+                @*@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-3 col-xs-6">
+                            <a href="@Url.Action("Create", "Interviews")" class="btn btn-block btn-primary btn-flat"><i class="ion ion-ios-plus-empty"></i> Create new interview</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.box-footer -->
+                }*@
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Interviews"]').parent().addClass('active');
+    });
+</script>

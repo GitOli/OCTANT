@@ -1,0 +1,85 @@
+﻿@model Framework.Question
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Question</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AnswerType)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AnswerType)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.PossibleAnswer)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PossibleAnswer)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Node.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Node.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Role.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Role.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsFactor)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsFactor)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsRelevant)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsRelevant)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+        </div>
+    }
+</div>

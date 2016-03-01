@@ -1,0 +1,74 @@
+﻿@model Framework.Node
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Node</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ParentNode.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ParentNode.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Perspective.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Perspective.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Weight)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Weight)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsRoot)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsRoot)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Equation)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Equation)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.IdNode }) |
+    @Html.ActionLink("Cancel", "Index")
+</p>

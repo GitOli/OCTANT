@@ -1,0 +1,101 @@
+﻿@model Interview.Customer
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+@*<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Customer</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Industry.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Industry.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Comment)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Comment)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+        </div>
+    }
+</div>*@
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li><a href="@Url.Action("Index", "Customers")">Customers</a></li>
+        <li><a href="@Url.Action("Details", "Customers", new { id = Model.IdCustomer })">@Model.Name</a></li>
+        <li class="active">Delete</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Delete Customer</h3>
+                </div><!-- /.box-header -->
+
+                <div class="box-body">
+                    <span>Are you sure you want to delete this?</span>
+                    <br /><br />
+                    <span class="campagn-name">@Html.DisplayFor(model => model.Name)</span>
+                </div><!-- /.box-body -->
+                <div class="box-footer">
+                    <form method="post" action="@Url.Action("Delete", "Customers", new { id = Model.IdCustomer })" role="form">
+                        @Html.AntiForgeryToken()
+                        <input type="submit" value="Delete" class="btn btn-danger" />
+                        @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+                    </form>
+                </div><!-- /.box-footer -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('ul.sidebar-menu > li').removeClass('active');
+            $('ul.sidebar-menu > li > a[href="/Customers"]').parent().addClass('active');
+        });
+</script>

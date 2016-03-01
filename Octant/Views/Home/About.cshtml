@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+
+<link href='http://fonts.googleapis.com/css?family=Lato:100,300' rel='stylesheet' type='text/css'>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li class="active">About</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-5 col-sm-8 col-sm-offset-4 col-xs-12">
+            <div class="about-box">
+                <div class="row">
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <img src="~/Content/fl/img/octantlogo1.png" alt="OctantLogo" style="width:80%;">
+                        <h1><b>O</b>CTANT
+                        </h1>
+                    </div><!-- /.col -->
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-2 col-sm-10 col-sm-offset-2 col-xs-10 col-xs-offset-2">
+                        <p>Interview solution <small>v1.0</small></p>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+                <div class="row">
+                    <div class="col-md-9 col-md-offset-3 col-sm-9 col-sm-offset-3 col-xs-9 col-xs-offset-3">
+                        <small>Developped by</small>
+                        <ul style="list-style-type: circle;">
+                            <li><small>Olivier Tricoli</small></li>
+                            <li><small>Olivier Baka</small></li>
+                            <li><small>Vincent Al-Kai</small></li>
+                            <li><small>François Louis</small></li>
+                        </ul>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.about-box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/"]').parent().addClass('active');
+
+        $('.content-wrapper').css('background-image', 'url("/Content/fl/img/octant.png")');
+        $('.content-wrapper').css('background-repeat', 'no-repeat');
+        $('.content-wrapper').css('background-position', '50px 50px');
+    });
+</script>

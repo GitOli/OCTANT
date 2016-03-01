@@ -1,0 +1,92 @@
+﻿@model IdentitySample.Models.LoginViewModel
+@{
+    ViewBag.Title = "Login";
+}
+
+@Styles.Render("~/FL/css")
+<style>
+     .checkbox input[type="checkbox"] {
+         margin-left: 0;
+     }
+     #target {
+        margin: 0 auto;
+     }
+     #target_WaitingPopup .e-image {
+        display: block;
+        height: 70px;
+     }
+     #popup {
+        height: auto;
+        width: auto;
+        margin-top: 100px;
+     }
+</style>
+
+<body class="login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <img src="~/Content/fl/img/octantlogo1.png" alt="OctantLogo" style="width:80%;">
+
+            @*<a href="../../index2.html"><b>O</b>CTANT</a>*@
+        </div><!-- /.login-logo -->
+        <div class="login-box-body" style="box-shadow: 10px 10px 5px #5e6a78;">
+            <p class="login-box-msg">Log in to start</p>
+            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group has-feedback">
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group has-feedback">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="checkbox icheck">
+                            <label>
+                                @Html.CheckBoxFor(m => m.RememberMe)
+                                @Html.LabelFor(m => m.RememberMe)
+                            </label>
+                        </div>
+                    </div><!-- /.col -->
+                    <div class="col-xs-4">
+                        @{Dictionary<string, object> btn = new Dictionary<string, object>();
+                          btn.Add("class", "btn-primary btn-block btn-flat");}
+                        @*@Html.EJ().Button("submit").Text("Log In").HtmlAttributes(btn).ClientSideEvents(e => e.Create("btnload").Click("btnClick"))*@
+                        <button type="submit" class="btn btn-primary btn-block btn-flat" onclick=" btnClick ">Log In</button>
+                        @Html.EJ().WaitingPopup("target").ShowOnInit(false)
+                    </div><!-- /.col -->
+                </div>
+            }
+            <div class="social-auth-links text-center">
+                <p>- OR -</p>
+            </div><!-- /.social-auth-links -->
+            <a href="@Url.Action("ForgotPassword")">I forgot my password</a><br>
+            <a href="@Url.Action("Register")" class="text-center">Register a new account</a>
+        </div><!-- /.login-box-body -->
+    </div><!-- /.login-box -->
+</body>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/modernizr")
+@Scripts.Render("~/Scripts/ej")
+@Scripts.Render("~/FL/js")
+<script>
+         function btnClick(e)
+         {
+            var wp = $("#target").data("ejWaitingPopup");
+            wp.show();
+            setTimeout(success, 5000);
+         }
+
+         function success()
+         {
+            alert("Signed in successfully");
+            var popup = $("#target").ejWaitingPopup("hide");
+         }
+</script>

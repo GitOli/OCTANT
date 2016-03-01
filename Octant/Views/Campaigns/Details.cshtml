@@ -1,0 +1,474 @@
+﻿@using IdentitySample.Models
+@using Microsoft.AspNet.Identity.EntityFramework
+@using Interview
+@using Syncfusion.DocIO.DLS.XML
+@model Campaign
+
+@{
+    ViewBag.Title = "Campaign " + Model.Name;
+    var db = new ApplicationDbContext();
+    var dbc = new ApplicationDbContext();
+}
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+            <li><a href="@Url.Action("Index", "Home")">Campaigns</a></li>
+            <li class="active">@Html.DisplayFor(model => model.Name)</li>
+        </ol>
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+        <div class="modify">
+            <a href="@Url.Action("Saved", "Campaigns", new { id = Model.IdCampaign })" class="btn btn-default btn-flat" data-toggle="tooltip" title="See Campaign's summary, stats and charts"><i class="ion ion-ios-pulse"></i> See summary</a>
+            <div class="btn-group">
+                <a href="@Url.Action("Edit", "Campaigns", new { id = Model.IdCampaign })" class="btn btn-default btn-flat" data-toggle="tooltip" title="Edit"><i class="ion ion-ios-compose-outline"></i></a>
+                <a href="@Url.Action("Delete", "Campaigns", new { id = Model.IdCampaign })" class="btn btn-default btn-flat" data-toggle="tooltip" title="Delete"><i class="ion ion-ios-trash-outline"></i></a>
+            </div>
+        </div>
+        }
+        <h1>@Html.DisplayFor(model => model.Name) <small>@Html.DisplayFor(model => model.Status)</small></h1>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+    @{
+        int d = 0;
+        int n = 0;
+        foreach (Interview i in (ViewBag.Interviews as List<Interview>))
+        {
+            if (i.Deleted == false)
+            {
+                if (i.Completion == 100)
+                {
+                    d++;
+                }
+                n++;
+            }
+        }
+        int p = Model.Completion != null ? (int)Model.Completion : 0;
+        <!-- Info boxes -->
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-xs-4">
+                <div class="info-box @{ if (p == 0) { @Html.Raw("bg-red"); } else { if (p == 100) { @Html.Raw("bg-green"); } else { @Html.Raw("bg-aqua"); } } }">
+                    <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Interviews</span>
+                        <span class="info-box-number">@d<small> / @n</small></span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: @p%"></div>
+                        </div>
+                        <span class="progress-description">Completion: @Html.DisplayFor(model => model.Completion)% </span>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-4 col-sm-4 col-xs-4">
+                <div class="info-box">
+                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-person-outline"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Manager</span>
+                        <div class="info-box-user">
+                            <img src="@ViewBag.UserImage" class="img-circle" alt="User Image" /> &nbsp;
+                            <p>
+                                @Html.DisplayFor(model => model.ApplicationUsers.FullName)<br />
+                                <small>@Html.DisplayFor(model => model.ApplicationUsers.Firm.Name)</small>
+                            </p>
+                        </div>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+            <div class="col-md-4 col-sm-4 col-xs-4">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="ion ion-earth"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Customer</span>
+                        <div class="info-box-user">
+                            <img src="@ViewBag.CustomerImage" class="img-circle" alt="User Image" /> &nbsp;
+                            <p>
+                                @Html.DisplayFor(model => model.Customer.Name)<br />
+                                <small>@Html.DisplayFor(model => model.Customer.Industry.Name)</small>
+                            </p>
+                        </div>
+                    </div><!-- /.info-box-content -->
+                </div><!-- /.info-box -->
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="box @{ if (p == 0) { @Html.Raw("box-danger"); } else { if (p == 100) { @Html.Raw("box-success"); } else { @Html.Raw("box-info"); } } }">
+                    <div class="box-header with-border">
+                        @*<h3 class="box-title">Interviews</h3>*@
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-6">
+                                <a href="@Url.Action("Create", "Interviews", new { idcampaign = Model.IdCampaign })" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new Interview"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table">
+                                    <tbody>
+                                    @foreach (Interview i in (ViewBag.Interviews as List<Interview>))
+                                    {
+                                        var interviewees = db.Interviewees.Where(x => x.IdInterview == i.IdInterview);
+                                        var intervieweenames = "None";
+                                        if (intervieweenames != null)
+                                        {
+                                            intervieweenames = "";
+                                            var cpt = 0;
+                                            foreach (var interviewee in interviewees)
+                                            {
+                                                if (intervieweenames == "")
+                                                {
+                                                    intervieweenames += dbc.Candidates.Find(interviewee.IdCandidate).FullName;
+                                                }
+                                                else if (cpt >= 3)
+                                                {
+                                                    intervieweenames += ",...";
+                                                }
+                                                else
+                                                {
+                                                    intervieweenames += ", " + dbc.Candidates.Find(interviewee.IdCandidate).FullName;
+                                                    cpt++;
+                                                }
+                                            }
+                                        }
+                                        <tr>
+                                            <td><span class="interview-name">@Html.DisplayFor(m => i.Name)</span></td>
+                                            <td>
+                                                <span class="interview-date"><label>Date :</label> @Html.DisplayFor(m => i.Date)</span>
+                                                <br/>
+                                                <span class="interview-creator"><label>Consultant :</label> @Html.DisplayFor(m => i.ApplicationUsers.FullName)</span>
+                                                <br/>
+                                                <span class="interview-creator"><label>Interviewee(s) :</label> @intervieweenames</span>
+                                            </td>
+                                            <td class="interview-status">
+                                                <label>Status :</label>
+                                                @if (i.Canceled)
+                                                {
+                                                    <span class="text-red"> Canceled</span>
+                                                }
+                                                else
+                                                {
+                                                    if (i.Suspended)
+                                                    {
+                                                        <span class="text-yellow"> Suspended</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-info"> In Progress</span>
+                                                    }
+                                                }
+                                                <br/>
+                                                <label>Completion :</label> <span>@Html.DisplayFor(m => i.Completion)%</span>
+                                                <div class="progress progress-xxs" style="width: 90%;">
+                                                    <div class="progress-bar @{
+                                                                                 if (i.Completion == 100)
+                                                                                 {
+                                                                                     @Html.Raw("progress-bar-success")
+                                                                                     ;
+                                                                                 }
+                                                                                 else
+                                                                                 {
+                                                                                     @Html.Raw("progress-bar-info")
+                                                                                     ;
+                                                                                 }
+                                                                             }" style="width: @i.Completion%" role="progressbar" aria-valuenow="@i.Completion" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </td>
+                                            <td class="interview-buttons">
+                                                <a href="@Url.Action("Edit", "Interviews", new {id = i.IdInterview})" class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Edit Interview"><i class="ion ion-ios-compose-outline"></i></a>
+                                                <a href="@Url.Action("Delete", "Interviews", new {id = i.IdInterview})" class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Delete Interview"><i class="ion ion-ios-trash-outline"></i></a>
+                                            </td>
+                                            <td class="interview-access">
+                                                <a href="@Url.Action(((i.Completion == 0) ? "Index" : "Edit"), "ConductInterview", new {IdInterview = i.IdInterview})" class="btn @((i.Completion == 0) ? "btn-danger" : ((i.Completion == 100) ? "btn-success" : "btn-info")) btn-flat " data-toggle="tooltip" title="Conduct Interview"><i class="ion ion-ios-chatboxes-outline"></i></a> &nbsp;
+                                                <a href="@Url.Action("Saved", "ConductInterview", new {Id = i.IdInterview})" class="btn btn-warning btn-flat @((i.Completion == 0) ? "disabled" : "")" data-toggle="tooltip" title="Details"><i class="ion ion-ios-search"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- ./box-body -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                    {
+                    <div class="box-footer">
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-6">
+                                <a href="@Url.Action("Create", "Interviews", new { idcampaign = Model.IdCampaign })" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new Interview"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- /.box-footer -->
+                    }
+                </div><!-- /.box -->
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="box box-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Consultants</h3>
+                        <div class="box-tools pull-right">
+                            <span class="label label-success">@((ViewBag.Consultants as List<ApplicationUser>).Count) Consultants</span>
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+                    <div class="box-body no-padding">
+                        <ul class="users-list clearfix">
+                            @foreach (ApplicationUser co in (ViewBag.Consultants as List<ApplicationUser>))
+                            {
+                                <li>
+                                    <!--img src="~/Content/fl/img/superadmin.jpg" alt="User Image"-->
+                                    <a class="users-list-name" href="@Url.Action("Details", "UsersAdmin", new { id = co.Id })" target="_blank">@co.FullName</a>
+                                    <span class="users-list-date">
+                                        @{
+                                            if (co.Roles.Count > 0)
+                                            {
+                                                @db.Roles.Find(co.Roles.First().RoleId).Name
+                                            }
+                                            if (co.Roles.Count == 0)
+                                            {
+                                                @Html.Raw("&nbsp;")
+                                            }
+                                        }
+                                    </span>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                                    {
+                                        <a href="#" class="users-list-delete" onclick="consultantrm('@co.Id'); return false;"><i class="ion ion-ios-close-outline"></i></a>
+                                    }
+                                </li>
+                            }
+                        </ul><!-- /.users-list -->
+                    </div><!-- /.box-body -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                    {
+                    <div class="box-footer text-center">
+                        <a href="#" class="uppercase" data-toggle="modal" data-target="#new-consultant-modal">Add New Consultant</a>
+                    </div><!-- /.box-footer -->
+                    }
+                </div>
+            </div><!-- /.col -->
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="box box-warning">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Candidates</h3>
+                        <div class="box-tools pull-right">
+                            <span class="label label-warning">@((ViewBag.Candidates as List<Candidate>).Count) Candidates</span>
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+                    <div class="box-body no-padding">
+                        <ul class="users-list clearfix">
+                            @foreach (Candidate ca in (ViewBag.Candidates as List<Candidate>))
+                            {
+                                var group = db.CandidateCampaigns.Where(cc => cc.IdCandidate == ca.IdCandidate).Select(cc => cc.Group).FirstOrDefault();
+                            <li>
+                                <!--img src="~/Content/fl/img/candidates/rafa.jpg" alt="User Image"-->
+                                <a class="users-list-name" href="@Url.Action("Details", "Candidates", new { id = ca.IdCandidate })" target="_blank">@ca.FullName</a>
+                                <span class="users-list-date">@if (@group != null)
+                                                              {
+                                                                  @(@group.Name)
+                                                              }</span>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                                {
+                                <a href="#" class="users-list-delete" onclick="candidatrm('@ca.IdCandidate'); return false;"><i class="ion ion-ios-close-outline"></i></a>
+                                }
+                            </li>
+                            }
+                        </ul><!-- /.users-list -->
+                    </div><!-- /.box-body -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                    {
+                    <div class="box-footer text-center">
+                        <a href="#" class="uppercase" data-toggle="modal" data-target="#new-candidat-modal">Add New Candidate</a>
+                    </div><!-- /.box-footer -->
+                    }
+                </div>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    }
+</section><!-- /.content -->
+
+@if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+{
+<div class="modal fade" id="new-consultant-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title"><span class="label label-success">Add new consultant</span></h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    @Html.DropDownList("ConsultantsList", new SelectList(ViewBag.FullConsultants, "Id", "FullName"), "-- Please select a consultant to add --", new { @style = "width: 100%;" })
+                </p>
+                <p class="modal-body-p">Add a consultant to this campaign</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline btn-primary pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline btn-primary disabled" id="consultant-add">Add consultant</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="new-candidat-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title"><span class="label label-warning">Add new candidate</span></h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    @Html.DropDownList("CandidatsList", new SelectList(ViewBag.FullCandidats, "IdCandidate", "FullName"), "-- Please select a candidat to add --", new { @style = "width: 100%;" })
+                </p>
+                @*<p class="modal-body-p">Add a candidate to this campaign</p>*@
+                <p>
+                    @Html.DropDownList("GroupsList", new SelectList(ViewBag.FullGroups, "IdGroup", "Name"), "-- Please select a group --", new { @style = "width: 100%;" })
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline btn-primary pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline btn-primary disabled" id="candidat-add">Add candidate</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        @foreach (ApplicationUser co in (ViewBag.Consultants as List<ApplicationUser>))
+        {
+            @:$('#ConsultantsList option[value="@co.Id"]').attr("disabled", "disabled");
+        }
+        $("#ConsultantsList").select2({
+            placeholder: "-- Please select a consultant to add --"
+        });
+        $("#ConsultantsList").on("select2:select", function (e) { $("#consultant-add").removeClass('disabled') });
+
+        $('#new-consultant-modal').on('shown.bs.modal', function () {
+            $("#ConsultantsList").val(null).trigger("change");
+        });
+
+        $('#consultant-add').click(function () {
+            $.ajax({
+                url: '@Url.Action("AddConsultant", "Campaigns")',
+                type: 'POST',
+                data: {
+                    idCampaign: @Model.IdCampaign,
+                    idConsultant: $("#ConsultantsList").val()
+                },
+                success: function (msg) {
+                    if (msg != "error") {
+                        $('#new-consultant-modal').modal('hide');
+                        window.location.reload();
+                    }
+                    else {
+                        alert("An error occured, please retry in a few moment.");
+                    }
+                }
+            });
+        });
+    });
+
+    function consultantrm(idUser) {
+        $(document).ready(function () {
+            $.ajax({
+                url: '@Url.Action("DelConsultant", "Campaigns")',
+                type: 'POST',
+                data: {
+                    idCampaign: @Model.IdCampaign,
+                    idConsultant: idUser
+                },
+                success: function (msg) {
+                    if (msg != "error") {
+                        window.location.reload();
+                    }
+                    else {
+                        alert("An error occured, please retry in a few moment.");
+                    }
+                }
+            });
+        });
+    };
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        @foreach (Candidate co in (ViewBag.Candidates as List<Candidate>))
+        {
+            @:$('#CandidatsList option[value="@co.IdCandidate"]').attr("disabled", "disabled");
+                }
+        $("#CandidatsList").select2({
+            placeholder: "-- Please select a candidat to add --"
+        });
+        $("#CandidatsList").on("select2:select", function(e) {
+            $("#candidat-add").removeClass('disabled');
+        });
+
+        $("#GroupsList").select2({
+            placeholder: "-- Please select a group --"
+        });
+
+        $('#new-candidat-modal').on('shown.bs.modal', function () {
+            $("#CandidatsList").val(null).trigger("change");
+            $("#GroupsList").val(null).trigger("change");
+        });
+
+        $('#candidat-add').click(function () {
+            $.ajax({
+                url: '@Url.Action("AddCandidat", "Campaigns")',
+                type: 'POST',
+                data: {
+                    idCampaign: @Model.IdCampaign,
+                    idCandidat: $("#CandidatsList").val(),
+                    idGroup: $("#GroupsList").val()
+                },
+                success: function (msg) {
+                    if (msg != "error") {
+                        $('#new-candidat-modal').modal('hide');
+                        window.location.reload();
+                    }
+                    else {
+                        alert("An error occured, please retry in a few moment.");
+                    }
+                }
+            });
+        });
+    });
+
+    function candidatrm(idCandidat) {
+        $(document).ready(function () {
+            $.ajax({
+                url: '@Url.Action("DelCandidat", "Campaigns")',
+                type: 'POST',
+                data: {
+                    idCampaign: @Model.IdCampaign,
+                    idCandidat: idCandidat
+                },
+                success: function (msg) {
+                    if (msg != "error") {
+                        window.location.reload();
+                    }
+                    else {
+                        alert("An error occured, please retry in a few moment.");
+                    }
+                }
+            });
+        });
+    };
+</script>
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Campaigns"]').parent().addClass('active');
+    });
+</script>

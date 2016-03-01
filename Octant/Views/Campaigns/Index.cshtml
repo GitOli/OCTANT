@@ -1,0 +1,136 @@
+﻿@using IdentitySample.Models
+@using Interview
+@model IEnumerable<Campaign>
+
+@{
+    ViewBag.Title = "Campaigns";
+}
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+            <li class="active">Campaigns</li>
+        </ol>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Campaigns</h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div><!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table">
+                                    <tbody>
+                                        @foreach (Campaign c in Model)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <span class="campagn-name">@Html.DisplayFor(modelItem => c.Name)</span>
+                                                    <br />
+                                                    <span class="campagn-dates"><label>Start date:</label> @Html.DisplayFor(modelItem => c.StartDate)</span>
+                                                    <br />
+                                                    <span class="campagn-dates"><label>End date:</label> @Html.DisplayFor(modelItem => c.EndDate)</span>
+                                                </td>
+                                                <td class="campagn-infos">
+                                                    <span class="campagn-customer"><label>Customer:</label> @Html.DisplayFor(modelItem => c.Customer.Name)</span>
+                                                    <br/>
+                                                    <span class="campagn-questionnaire"><label>Questionnaire :</label> @Html.DisplayFor(modelItem => c.Questionnaire.Name)</span>
+                                                    <br />
+                                                    <span class="campagn-creator"><label>Coverage:</label> @Html.DisplayFor(modelItem => c.Coverage)%</span>
+                                                </td>
+                                                <td>
+
+                                                <a href="@Url.Action("Details", "Campaigns", new {id = c.IdCampaign})">
+                                                    @{
+                                                        int d = 0;
+                                                        int n = 0;
+                                                        foreach (Interview i in (ViewBag.Interviews as List<Interview>).Where(x => x.IdCampaign == c.IdCampaign && !x.Deleted))
+                                                        {
+                                                            if (i.Completion == 100)
+                                                            {
+                                                                d++;
+                                                            }
+                                                            n++;
+                                                        }
+                                                        int p = c.Completion ?? 0;
+                                                        <div class="info-box @{
+                                                                                 if (p == 0)
+                                                                                 {
+                                                                                     @Html.Raw("bg-red")
+                                                                                     ;
+                                                                                 }
+                                                                                 else
+                                                                                 {
+                                                                                     if (p == 100)
+                                                                                     {
+                                                                                         @Html.Raw("bg-green")
+                                                                                         ;
+                                                                                     }
+                                                                                     else
+                                                                                     {
+                                                                                         @Html.Raw("bg-aqua")
+                                                                                         ;
+                                                                                     }
+                                                                                 }
+                                                                             }">
+                                                            <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
+                                                            <div class="info-box-content">
+                                                                <span class="info-box-text">Interviews</span>
+                                                                <span class="info-box-number">@d<small> / @n</small></span>
+                                                                <div class="progress">
+                                                                    <div class="progress-bar" style="width: @p%"></div>
+                                                                </div>
+                                                                <span class="progress-description">Completion: @Html.DisplayFor(modelItem => c.Completion)% </span>
+                                                            </div><!-- /.info-box-content -->
+                                                        </div>
+                                                        <!-- /.info-box -->
+                                                    }
+                                                </a>
+                                                </td>}
+                                                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                                                {
+                                                <td class="campagn-buttons">
+                                                    <a href="@Url.Action("Edit", "Campaigns", new { id = c.IdCampaign })" class="btn btn-block btn-default btn-flat"><i class="ion ion-ios-compose-outline"></i></a>
+                                                    <a href="@Url.Action("Delete", "Campaigns", new { id = c.IdCampaign })" class="btn btn-block btn-default btn-flat"><i class="ion ion-ios-trash-outline"></i></a>
+                                                </td>
+                                                }
+                                                <td class="campagn-access">
+                                                    <a href="@Url.Action("Details", "Campaigns", new { id = c.IdCampaign })" class="btn btn-block btn-warning btn-flat"><i class="ion ion-ios-search"></i></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- ./box-body -->
+                    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                    {
+                    <div class="box-footer">
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-6">
+                                <a href="@Url.Action("Create", "Campaigns")" class="btn btn-block btn-primary btn-flat"><i class="ion ion-ios-plus-empty"></i> Create new campaign</a>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- /.box-footer -->
+                    }
+                </div><!-- /.box -->
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Campaigns"]').parent().addClass('active');
+    });
+</script>

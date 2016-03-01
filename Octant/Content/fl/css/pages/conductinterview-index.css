@@ -1,0 +1,79 @@
+﻿/* -------------------------------------------
+    ConductInterview / Index : CSS
+------------------------------------------- */
+
+.cisave {
+    position: relative;
+    height: 36px;
+    margin-bottom: 8px;
+}
+
+.cisave .btn-save, .cisave .btn-save:focus {
+    position: absolute;
+    bottom: 2px;
+    right: 0;
+    margin: 0;
+}
+
+.cisave i {
+    color: grey;
+}
+
+.cisave .label-online-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: transparent;
+    color: grey;
+    font-size: 10px;
+}
+
+.cisave .online-status {
+    color: grey;
+}
+
+.cisave .online-status.green {
+    color: green;
+}
+
+.cisave .online-status.red {
+    color: red;
+}
+
+
+.node {
+    background-color: #ECF0F5;
+    cursor: pointer;
+}
+
+.node1 {
+    /*position: relative;
+    left: -10px;*/
+    font-weight: 400;
+}
+
+.question {
+    cursor: pointer;
+}
+
+.question.active td {
+    /*background-color: white !important;*/
+    font-weight: bold;
+}
+
+.question.active td:first-child {
+    color: #3C8DBC;
+}
+
+.question-validate {
+    padding: 5px 8px;
+}
+
+.question-validate i {
+    font-size: 24px;
+    display: none;
+}
+
+.invisible {
+    display: none !important;
+}

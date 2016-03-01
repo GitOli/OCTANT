@@ -1,0 +1,30 @@
+﻿/* -------------------------------------------
+    Campaigns / Saved : CSS
+------------------------------------------- */
+
+.campaigndesc label {
+    margin-right: 6px;
+    font-size: 12px;
+    font-weight: 300;
+    color: grey;
+}
+
+.interviews-legend td {
+    font-weight: 400;
+}
+
+
+
+.question {
+
+}
+
+.node {
+    background-color:#ff6a00;
+    background-color:rgba(255, 106, 0, 0.11);
+    font-weight: bold;
+}
+
+.isrelevant-0 {
+    color: #A7A7A7;
+}

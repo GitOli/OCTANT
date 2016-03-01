@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Octant</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+	@Scripts.Render("~/bundles/jquery")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Octant", "Index", "Home", null, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @*<li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("About", "About", "Home")</li>
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+                    @if (Request.IsAuthenticated)
+                    {
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Menu <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @*<li>
+                                <a href="@Url.Action("Index", "ConductInterview")"><span>Conduct Interview</span></a>
+                            </li>*@
+                                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                                {
+                                @*<li class="divider"></li>*@
+                                @*<li>@Html.ActionLink("Roles", "Index", "RolesAdmin")</li>*@
+                                    <li>@Html.ActionLink("Users", "Index", "UsersAdmin")</li>
+                                    <li class="divider"></li>
+                                }
+                                <li>
+                                    <a href="@Url.Action("Index", "Firms")"><span>Firms</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Industries")"><span>Industries</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Customers")"><span>Customers</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Campaigns")"><span>Campaigns</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Groups")"><span>Groups</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Candidates")"><span>Candidates</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Interviews")"><span>Interviews</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Interviewees")"><span>Interviewees</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Standards")"><span>Standards</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Frameworks")"><span>Frameworks</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Questionnaires")"><span>Questionnaires</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Questions")"><span>Questions</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Nodes")"><span>Nodes</span></a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Roles")"><span>Roles</span></a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div id="notformobile">
+        Sorry, Octant cannot be displayed. Try using a larger screen device or put the window in fullscreen mode.
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Octant</p>
+        </footer>
+    </div>
+
+    
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

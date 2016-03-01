@@ -1,0 +1,211 @@
+﻿@using System.Data.Entity
+@using System.Globalization
+@using IdentitySample.Models
+
+@{
+    if (!User.IsInRole("Admin") || !User.IsInRole("Consultant"))
+    {
+        
+    }
+    var db = new ApplicationDbContext();
+    var dbn = new ApplicationDbContext();
+    var dbq = new ApplicationDbContext();
+    var nodes = dbn.Nodes;
+    var questions = dbq.Questions;
+    var questionnaires = db.Questionnaires;
+    var grid = new WebGrid(source: questions);
+}
+
+
+<div class="" id="wrapper">
+    <div id="sidebar-wrapper" class="col-md-3">
+        <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                Perspectives
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="" href="#">Management level</a>
+                </li>
+                <li>
+                    <a class="" href="#">Pilars</a>
+                </li>
+            </ul>
+        </div>
+        <div class="" id="sidebar">
+            <div class="tree well">
+                <ul class="">
+                    <li>
+                        @*<span class=""><i class="icon-folder-open"></i> Agility Index</span>
+                        <ul class="">
+                            <li>
+                                <span class=""><i class="icon-minus-sign"></i> Integration</span>
+                                <ul class="">
+                                    <li>
+                                        <a class="" href="">Concurrent execution of activities</a>
+                                    </li>
+                                    <li>
+                                        <a class="" href="">Entreprise integration</a>
+                                    </li>
+                                    <li>
+                                        <a class="" href="">Information accessible to employees</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <span class=""><i class="icon-minus-sign"></i> Competence</span>
+                                <ul class="">
+                                    <li>
+                                        <a class="" href="">Concurrent execution of activities</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <span class=""><i class="icon-minus-sign"></i> Team building</span>
+                                <ul class="">
+                                    <li>
+                                        <a class="" href="">Concurrent execution of activities</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <span class=""><i class="icon-minus-sign"></i> Technology</span>
+                                <ul class="">
+                                    <li>
+                                        <a class="" href="">Concurrent execution of activities</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>*@
+                        @foreach (var node in nodes)
+                        {
+                            <span class=""><i class="icon-folder-open"></i> @node.Name</span>
+                            var y = node.IdNode;
+                            foreach (var question in questions.Where(x => x.IdNode == y))
+                            {
+                                var name = question.Name;
+                                var descr = question.Description;
+                                <ul>
+                                    <li>
+                                        <a href="" onclick="setQuestion('@name', '@descr');return false;">@name</a>
+                                    </li>
+                                </ul>
+                            }
+                        }
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 col-md-offset-3">
+        <div class="page-header">
+            <br class="">
+            <h3 class="">Conduct Interview<br class=""></h3>
+        </div>
+        <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <label for="quest" class="col-lg-2 control-label">Name</label>
+                <div class="col-lg-7">
+                    <input class="form-control" id="quest" name="quest" placeholder="Question" type="text"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="descr" class="col-lg-2 control-label">Description</label>
+                <div class="col-lg-7">
+                    <textarea class="form-control" id="descr" name="descr" rows="3" placeholder="Question description"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-lg-offset-2 col-lg-7">
+                    <div class="checkbox">
+                        <label class="">
+                            <input class="" type="checkbox">Not at all
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label class="">
+                            <input class="" type="checkbox">In paper form
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label class="">
+                            <input class="" type="checkbox">On the intranet
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label class="">
+                            <input class="" type="checkbox">Through regular meetings
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div>
+                
+            </div>
+            <div class="form-group">
+                <div class="col-lg-offset-2 col-lg-10">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </div>
+            </div>
+        </form>
+        <nav>
+            <ul class="pager">
+                <li class="previous">
+                    <a class="" href="#"><span class="" aria-hidden="true">←</span> Previous</a>
+                </li>
+                <li class="next">
+                    <a class="" href="#">Next <span class="" aria-hidden="true">→</span></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div id="main-wrapper" class="col-md-2">
+        <div class="target" id="main">
+            <div class="page-header">
+                <h3 class="">Roles<br class=""></h3>
+            </div>
+            <label class="checkbox">
+                <input class="form-control" type="checkbox">Profile 1
+            </label>
+            <label class="checkbox">
+                <input class="form-control" type="checkbox">Profile 2
+            </label>
+            <label class="checkbox">
+                <input class="form-control" type="checkbox">Profile 3
+            </label>
+            <label class="checkbox">
+                <input class="form-control" type="checkbox">CSR
+            </label>
+            <label class="checkbox">
+                <input class="form-control" type="checkbox">OPS
+            </label>
+            <label class="checkbox">
+                <input class="form-control" type="checkbox">FAC
+            </label>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/Scripts/js")
+<script type="text/javascript">
+    $(function () {
+        $('.tree li:has(ul)').addClass('parent_li').find(' > span').attr('title', 'Collapse this branch');
+        $('.tree li.parent_li > span').on('click', function (e) {
+            var children = $(this).parent('li.parent_li').find(' > ul > li');
+            if (children.is(":visible")) {
+                children.hide('fast');
+                $(this).attr('title', 'Expand this branch').find(' > i').addClass('icon-plus-sign').removeClass('icon-minus-sign');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Collapse this branch').find(' > i').addClass('icon-minus-sign').removeClass('icon-plus-sign');
+            }
+            e.stopPropagation();
+        });
+    });
+    function setQuestion(question, description) {
+        document.getElementById("quest").value = question;
+        document.getElementById("descr").value = description;
+    }
+</script>

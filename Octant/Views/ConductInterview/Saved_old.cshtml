@@ -1,0 +1,258 @@
+﻿@using System.Web.UI.WebControls
+@using IdentitySample.Models
+@using Interview
+@using Framework
+@using Microsoft.Ajax.Utilities
+@model IEnumerable<Answer>
+
+@{
+    ViewBag.Title = "Saved";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Styles.Render("~/Content/css")
+
+<h2>@ViewBag.InterviewName</h2>
+<br />
+
+<div class="row interviewdesc">
+    <div class="col-xs-6">
+        <p><label>Campagn :</label> @ViewBag.InterviewCampaign</p>
+        <p><label>Date :</label> @ViewBag.InterviewDate</p>
+        <p><label>Description :</label> @ViewBag.InterviewDescription</p>
+    </div>
+    <div class="col-xs-6">
+        <p><label>Interviewer :</label> @ViewBag.InterviewInterviewer</p>
+        <p><label>Interviewee :</label> TO FIX @*ViewBag.InterviewInterviewee*@</p>
+        <p>@Html.ActionLink("Edit", "Edit", new { idinterview = @ViewBag.InterviewId })</p>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-xs-6">
+        <h4>Overall Score</h4>
+        <table id="nodeslist">
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th style="text-align: center">Custom scores</th>
+            </tr>
+            @foreach (Tuple<string, string, int, int, string> n in ViewBag.Nodes)
+            {
+                <tr class="@Html.DisplayFor(modelItem => n.Item1)">
+                    <td colspan="1">@Html.DisplayFor(modelItem => n.Item2)</td>
+                    <td colspan="2" class="nodegoal" id="@n.Item4">@Html.DisplayFor(modelItem => n.Item3)</td>
+                    <td align="center">
+                        <input class="customscore" id="@n.Item4" type="number" min="0" max="5" value="@n.Item3" onblur="addCustomScore(this)" />
+                        <button type="button" class="btn btn-info btn-xs comment" id="@n.Item4" style="float: right">Comment</button>
+                        <input type="hidden" id="@("h"+n.Item4)" value="@n.Item5">
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="customScoreModal" tabindex="-1" role="dialog" aria-labelledby="customScoreModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="customScoreModalLabel">Custom score comment</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="comment">Comment:</label>
+                        <textarea class="form-control" rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="savecomment">Save comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-6">
+        <div id="overallscore" data-dimension="180" data-text="@ViewBag.Part" data-info="Overall Score" data-width="2" data-bordersize="2" data-fontsize="40" data-percent="0" data-fgcolor="#61a9dc" data-bgcolor="#e2e2e2" data-total="@ViewBag.Total" data-part="@ViewBag.Part" data-icon="long-arrow-up" data-icon-size="28" data-icon-color="#fff"></div>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-xs-12">
+        <h4>Summary of the interview</h4>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <table id="answers">
+            @foreach (var a in Model)
+            {
+                <tr class="isrelevant-@Html.DisplayFor(modelItem => a.Value)">
+                    <td>@Html.DisplayFor(modelItem => a.Question.Name)</td>
+                    <td>
+                        @{ string[] pa; string[] ia; }
+                        @switch (a.Question.AnswerType)
+                        {
+                            case AnswerType.Text:
+                                <span>@Html.DisplayFor(modelItem => a.IntervieweeAnswer)</span>
+                                break;
+                            case AnswerType.Integer:
+                                <span>@Html.DisplayFor(modelItem => a.IntervieweeAnswer)</span>
+                                break;
+                            case AnswerType.SingleChoice:
+                                if (!a.IntervieweeAnswer.IsEmpty())
+                                {
+                                    pa = a.Question.PossibleAnswer.Split(';');
+                                    <span>@Html.DisplayFor(modelItem => pa[int.Parse(a.IntervieweeAnswer) - 1]) </span>
+                                }
+                                break;
+                            case AnswerType.MultipleChoice:
+                                if (!a.IntervieweeAnswer.IsEmpty())
+                                {
+                                    pa = a.Question.PossibleAnswer.Split(';');
+                                    ia = a.IntervieweeAnswer.Split(';');
+                                    for (int i = 0; i < pa.Length; i++)
+                                    {
+                                        if (ia[i] == "true")
+                                        {
+                                            <span>@Html.DisplayFor(modelItem => pa[i]) </span>
+                                        }
+                                    }
+                                }
+                                break;
+                            case AnswerType.Boolean:
+                                <span>@Html.DisplayFor(modelItem => a.IntervieweeAnswer)</span>
+                                break;
+                            case AnswerType.Real:
+                                <span>@Html.DisplayFor(modelItem => a.IntervieweeAnswer)</span>
+                                break;
+                            default: break;
+                        }
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => a.Comment)</td>
+                    <td>@Html.DisplayFor(modelItem => a.ConsultantComment)</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+@Scripts.Render("~/Scripts/ConductInterview/Saved")
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#overallscore').circliful();
+        $('.nodegoal').each(function () {
+            var tmp = $(this).html();
+            $(this).html("");
+            $(this).goalProgress({
+                goalAmount: 5,
+                currentAmount: tmp,
+                textBefore: '',
+                textAfter: ''
+            });
+        });
+    });
+</script>
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Interviews"]').parent().addClass('active');
+    });
+</script>
+
+<!-- Collapse sidebar + change bg color -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('body.sidebar-mini').addClass('sidebar-collapse');
+        $('div.content-wrapper').css('background-color', '#ffffff');
+    });
+</script>
+
+<script>
+    var customscores = [];
+    var customscore = [];
+    var idinterview = '@ViewBag.InterviewId';
+    var id = 0;
+    var comment = "";
+
+    $(document).ready(function () {
+        customscores = @Html.Raw(
+        Json.Encode(
+            ((IEnumerable<CustomScore>)ViewBag.CustomScores).Select(item => new
+            {
+                IdNode = item.IdNode,
+                Value = item.Value,
+                Comment = item.Comment,
+                IdInterview = item.IdInterview
+            })
+        ));
+    });
+
+    function addCustomScore(elem) {
+        customscore = [];
+        var idnode = elem.id;
+        customscore.push(idnode, elem.value, idinterview, false);
+        sendCustomScores();
+    }
+
+    function openModal(elem, comment) {
+        id = elem.id;
+        $('#customScoreModal').modal('show').find('textarea').attr('id', id).val(comment);
+    }
+
+    $('#savecomment').on('click', function() {
+        var comment = $('#customScoreModal').find('textarea').val();
+        customscore = [];
+        customscore.push(id, comment, idinterview, true);
+        sendCustomScores();
+        $('#customScoreModal').modal('hide');
+    });
+
+    $('.comment').on('click', function() {
+        id = this.id;
+        $('#customScoreModal').modal('show').find('textarea').attr('id', id).val($('#h' + id).val());
+    });
+
+    function sendCustomScores() {
+        if (customscore.length > 0) {
+            var iscomment;
+            var id = customscore[0];
+            if (customscore[3]) {
+                iscomment = customscore[3];
+                comment = customscore[1];
+            }
+            
+            $.ajax({
+                url: '@Url.Action("SaveCustomScores", "ConductInterview")',
+                contentType: 'application/json;',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(customscore),
+                success: function (result) {
+                    if (iscomment) {
+                        $('#h' + id).val(comment);
+                    }
+                    //alert("ID :" + id);
+                    //var nodescore = $('.customscore #' + id.toString()).val();
+                    //alert(nodescore);
+                    //if (result.message != "") {
+                    //    $('.nodegoal #' + id).goalProgress({
+                    //        goalAmount: 5,
+                    //        currentAmount: nodescore,
+                    //        textBefore: '',
+                    //        textAfter: ''
+                    //    });
+                    //}
+                }
+            });
+            customscore = [];
+        }
+    }
+</script>

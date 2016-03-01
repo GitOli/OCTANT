@@ -1,0 +1,88 @@
+﻿@using IdentitySample.Models
+@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.EntityFramework
+@model List<Tuple<ApplicationUser, string>>
+
+@{
+    ViewBag.Title = "Users Management";
+    
+    var db = new ApplicationDbContext();
+    var user = db.Users.Find(User.Identity.GetUserId());
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li class="active">Users Management</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    @*<h3 class="box-title">Users Management @(User.IsInRole("Manager") ? "for firm " + user.Firm.Name : "")</h3>*@
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 col-xs-6">
+                            <a href="@Url.Action("Create", "UsersAdmin")" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new User"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td style="text-align: center">
+                                                <img src="@item.Item2" width="100" height="100" class="img-responsive center-block"/>
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Item1.FullName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Item1.UserName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Item1.Firm.Name)
+                                            </td>
+                                            <td class="user-buttons">
+                                                @*@Html.ActionLink("Edit", "Edit", new { id = item.Item1.Id }, new { }) |
+                                                @Html.ActionLink("Delete", "Delete", new { id = item.Item1.Id })*@
+                                                <a href="@Url.Action("Edit", "UsersAdmin", new { id = item.Item1.Id })" c class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Edit"><i class="ion ion-ios-compose-outline"></i></a>
+                                                <a href="@Url.Action("Delete", "UsersAdmin", new { id = item.Item1.Id })" c class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Delete"><i class="ion ion-ios-trash-outline"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+                <div class="box-footer">
+                    <div class="row">
+                        <div class="col-sm-3 col-xs-6">
+                            <a href="@Url.Action("Create", "UsersAdmin")" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new User"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.box-footer -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/UsersAdmin"]').parent().addClass('active');
+    });
+</script>

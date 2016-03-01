@@ -1,0 +1,4 @@
+﻿@model Boolean?
+
+@*@Html.CheckBoxFor(m => m, new { type = "checkbox", @class = "check-box", @style = "margin-left: 0;" })*@
+@Html.CheckBox("", Model.HasValue && Model.Value, new { type = "checkbox", @class = "check-box", @style = "margin-left: 0;" })

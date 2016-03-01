@@ -1,0 +1,167 @@
+﻿@using System.Data.Entity
+@using System.Globalization
+@using IdentitySample.Models
+@using Interview
+@using Framework
+@model Interview
+
+@{
+    Layout = null;
+    var db = new ApplicationDbContext();
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octant - Interview @Model.Name Report</title>
+    <link href="/Content/fl/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/Content/fl/css/pages/campaigns-pdf.css" rel="stylesheet">
+</head>
+<body>
+    <div class="row header">
+        <div class="col-xs-6 text-left">
+            <div class="report-header">
+                <img src="@ViewBag.FirmImage" alt="Firm" height="90" />
+                <p>
+                    <span class="report-header-title">Octant - Report</span>
+                    <br />
+                    <span class="report-header-type"><label>Type:</label> Interview</span>
+                </p>
+            </div>
+        </div><!-- /.col -->
+        <div class="col-xs-6 text-right">
+            <div class="report-header">
+                <p>
+                    <span class="report-header-title">@Model.Campaign.Customer.Name</span>
+                    <br />
+                    <span class="report-header-type"><label>Industry:</label> @Model.Campaign.Customer.Industry.Name</span>
+                </p>
+                <img src="@ViewBag.CustomerImage" alt="Octant" height="90" />
+            </div>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <br /><br />
+    <div class="row header">
+        <div class="col-xs-12 text-center">
+            <p>
+                <span class="report-title">Interview @Model.Name Report</span>
+                <br />
+                <span class="report-date">@DateTime.Now.ToString("dd/MM/yyyy")</span>
+            </p>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <br /><br />
+    <div class="row">
+        <div class="col-xs-4 col-xs-offset-4 div-hr">
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <br /><br />
+    <div class="row content">
+        <div class="col-xs-12">
+            <p>
+                <label>Name :</label> @Model.Name
+                <br />
+                <label>Campaign :</label> @Html.DisplayFor(x => x.Campaign.Name)
+                <br />
+                <label>Date :</label> @Html.DisplayFor(x => x.Date)
+                <br /><br />
+                <label>Consultant :</label> <img src="@ViewBag.ConsultantImage" class="img-circle" alt="" height="60" /> @Html.DisplayFor(x => x.ApplicationUsers.FullName)
+                <br />
+                <label>Interviewee :</label> @ViewBag.InterviewInterviewee
+                <br /><br />
+                <label>Description :</label> @Html.DisplayFor(x => x.Description)
+            </p>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <br /><br /><br />
+    <div class="row content">
+        <div class="col-xs-7 campaign-desc">
+            <h2>Scores for @Model.Name</h2>
+            <table>
+                <tr class="interviews-legend">
+                    <td>Node</td>
+                    <td>Score</td>
+                </tr>
+                @foreach (Node m in ViewBag.Nodes)
+                {
+                    <tr>
+                        <td>@m.Name</td>
+                        <td>
+                            @{
+                                //var cs = db.CustomScores.Where(k => k.IdInterview == Model.IdInterview).Include(i => i.Interview.Campaign).Where(l => l.IdNode == m.IdNode).FirstOrDefault();
+                                var cs = db.CustomScores.Where(k => k.IdInterview == Model.IdInterview).Include(i => i.Interview.Campaign).Include(i => i.Node)
+                                    .Where(l => l.IdNode == m.IdNode && l.Node.IdQuestionnaire == m.IdQuestionnaire).FirstOrDefault();
+                                if (cs != null)
+                                {
+                                    @Html.Raw(cs.Value);
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div><!-- /.col -->
+        <div class="col-xs-5 campaign-scor">
+            <h2>Overall Score</h2>
+            <p class="text-center">
+                <input type="text" id="overallscore" value="@ViewBag.OverallScore" />
+            </p>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <br /><br /><br /><br /><br />
+    <div class="row content">
+        <div class="col-xs-12 campaign-inte">
+            <h2>Summary of the interview</h2>
+            <table>
+                @{ int n = 0; }
+                @foreach (Question q in ViewBag.Questions as List<Question>)
+                {
+                    if (q.IdNode != n)
+                    {
+                        <tr class="node">
+                            <td>@db.Nodes.Where(l => l.IdNode == q.IdNode).FirstOrDefault().Name</td>
+                            <td></td>
+                        </tr>
+                        n = (int)q.IdNode;
+                    }
+                    <tr class="question isrelevant-@(q.IsRelevant ? 1 : 0)">
+                        <td>@q.Name</td>
+                        @{
+                            var ans = db.Answers.Where(a => (a.IdInterview == Model.IdInterview) && (a.IdQuestion == q.IdQuestion)).FirstOrDefault();
+                            if (ans != null)
+                            {
+                                <td>@Html.Raw(ans.IntervieweeAnswer)</td>
+                                <td>@Html.Raw(ans.Comment)</td>
+                                if (ViewBag.IsFirm)
+                                {
+                                    <td>@Html.Raw(ans.ConsultantComment)</td>
+                                }
+                            }
+                        }
+                    </tr>
+                }
+            </table>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+
+    @Scripts.Render("~/bundles/jquery")
+    <script type="text/javascript" src="/Content/fl/js/jquery.knob.min.js"></script>
+
+    <!-- Overall Score Circle -->
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#overallscore").knob({
+            'min': 0,
+            'max': 5,
+            'readOnly': true,
+            'fgColor': "#932AB6",
+            'inputColor': "#932AB6",
+            'thickness': "0.05",
+        });
+    });
+    </script>
+</body>
+</html>

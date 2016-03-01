@@ -1,0 +1,136 @@
+﻿@model List<Tuple<Interview.Customer, string>>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@*<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Industry
+        </th>
+        <th>
+            Description
+        </th>
+        <th>
+            Comment
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td style="text-align: center">
+            <img src="@item.Item2" width="100" height="100" />
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Item1.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Item1.Industry.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Item1.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Item1.Comment)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {id = item.Item1.IdCustomer}) |
+            @Html.ActionLink("Details", "Details", new {id = item.Item1.IdCustomer}) |
+            @Html.ActionLink("Delete", "Delete", new {id = item.Item1.IdCustomer})
+        </td>
+    </tr>
+}
+
+</table>*@
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li class="active">Customers Management</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+                <div class="box-header with-border">
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3 col-xs-6">
+                            <a href="@Url.Action("Create", "Customers")" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new Customer"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td style="text-align: center">
+                                                <img src="@item.Item2" width="80" height="80" class="img-responsive center-block"/>
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Item1.Name)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Item1.Industry.Name)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Item1.Description)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Item1.Comment)
+                                            </td>
+                                            <td class="campagn-buttons">
+                                                <a href="@Url.Action("Edit", "Customers", new { id = item.Item1.IdCustomer })" class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Edit Customer"><i class="ion ion-ios-compose-outline"></i></a>
+                                                <a href="@Url.Action("Delete", "Customers", new { id = item.Item1.IdCustomer })" class="btn btn-block btn-default btn-flat" data-toggle="tooltip" title="Delete Customer"><i class="ion ion-ios-trash-outline"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                    <div class="box-footer">
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-6">
+                                <a href="@Url.Action("Create", "Customers")" class="btn btn-block btn-primary btn-flat" data-toggle="tooltip" title="Create new Customer"><i class="ion ion-ios-plus-empty"></i> Create</a>
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+                    </div><!-- /.box-footer -->
+                }
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Customers"]').parent().addClass('active');
+    });
+</script>

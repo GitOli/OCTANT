@@ -1,0 +1,361 @@
+﻿@using System.Data.Entity
+@using System.Globalization
+@using IdentitySample.Models
+@using System.Collections
+@using Microsoft.Ajax.Utilities
+
+@{
+    ViewBag.Title = "Conduct";
+    var db = new ApplicationDbContext();
+}
+
+@model int
+
+@Styles.Render("~/FL/pages/conductinterview/index")
+@Scripts.Render("~/bundles/angular")
+@Scripts.Render("~/Scripts/ConductInterview")
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li><a href="@Url.Action("Index", "Home")">Campaigns</a></li>
+        <li><a href="@Url.Action("Details", "Campaigns", new { id = ViewBag.InterviewIdCampaign })">@ViewBag.InterviewCampaign</a></li>
+        <li><a href="@Url.Action("Saved", "ConductInterview", new { id = Model })">@ViewBag.InterviewName</a></li>
+        <li class="active">Conduct</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content" ng-app="conductinterview" ng-controller="conductinterviewCtrl">
+    <script type="text/javascript">
+        conductinterview.value("qlist", @Html.Raw(ViewBag.List));
+        conductinterview.value("qcomments", @Html.Raw(ViewBag.Comments));
+        conductinterview.value("idinterview", @Html.Raw(Model));
+    </script>
+    <!-- Info boxes -->
+    <div class="row visible-lg-block visible-md-block">
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-red"><i class="ion-ios-speedometer-outline"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Campaign</span>
+                    <span class="info-box-text text-bold">@ViewBag.InterviewCampaign</span>
+                    <small>@ViewBag.Questionnaire</small>
+                </div><!-- /.info-box-content -->
+            </div><!-- /.info-box -->
+        </div><!-- /.col -->
+        <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green"><i class="ion ion-ios-person"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Candidate</span>
+                @{ var cpt = 0; }
+                @foreach (var candi in ViewBag.Candidate)
+                {
+                    cpt++;
+                    if (cpt > 3)
+                    {
+                        continue;
+                    }
+                    if (cpt == 3)
+                    {
+                        <span class="info-box-text text-bold">@candi ...</span>
+                    }
+                    else
+                    {
+                        <span class="info-box-text text-bold">@candi</span>
+                    }
+                }
+                    
+                </div><!-- /.info-box-content -->
+            </div><!-- /.info-box -->
+        </div><!-- /.col -->
+        <!-- fix for small devices only -->
+        <div class="clearfix visible-sm-block"></div>
+        <div class="col-md-4 col-sm-4 col-xs-4">
+            <div class="info-box">
+                <span class="info-box-icon bg-yellow"><i class="ion ion-earth"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Customer</span>
+                    <div class="info-box-user">
+                        <img src="@ViewBag.CustomerImage" class="img-circle" alt="User Image" /> &nbsp;
+                        <p>
+                            <span class="info-box-text text-bold">
+                                @ViewBag.CustomerName<br /></span>
+                            <small>@ViewBag.CustomerIndustry</small>
+</p>
+                    </div>
+                </div><!-- /.info-box-content -->
+            </div><!-- /.info-box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Navigation</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @*<div class="btn-group">
+                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Perspectives <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">Management level</a></li>
+                                        <li><a href="#">Pilars</a></li>
+                                    </ul>
+                                </div>*@
+                            @*<div class="col-md-4">
+                                <button type="button" class="btn btn-xs" id="collapseall" data-toggle="tooltip" title="Collapse All"><i class="ion-android-arrow-dropdown-circle"></i></button>
+                            </div>*@
+                            <div class="col-md-2">
+                                <button class="btn btn-primary btn-flat btn-xs" id="collapseall" data-toggle="tooltip" title="Collapse All"><i class="ion-android-arrow-dropdown-circle"></i></button>
+                            </div>
+                            <div class="col-md-3 col-md-offset-7 cisave">
+                                @*<span class="label-online-status">Online connection</span><i class="fa fa-wifi"></i> <span class="online-status" ng-class="{ 'green': online , 'red': !online }">{{ onlinestatus }}</span>*@
+                                <button type="button" id="save" class="btn btn-primary btn-flat btn-save" data-loading-text="Saving..." ng-click="cisave()" onclick="updateCompletion(this)">Save &amp; Quit</button>
+                            </div>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                    <div class="row hidden-xs hidden-sm" id="treeview">
+                        <div class="col-md-12">
+                            <div nginit="qlistlen = 1" ng-show="qlistlen >= 0" ng-slimscroll height="400" width="100%" opacity="0.5" size="5px">
+                                <table class="table">
+                                    <tbody>
+                                        @Html.Raw(ViewBag.Tree)
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+        <div class="col-md-7" id="boxquestion">
+            <div class="box box-success">
+                <div class="box-header with-border" style="height: 120px">
+                    <h3 class="box-title">Question</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                    @*<div class="row" style="height: 25px">
+                        <div class="col-md-8 col-md-offset-2">
+                            <ol class="breadcrumb">
+                                <li>test1</li>
+                                <li class="active">test2</li>
+                            </ol>
+                        </div>
+                    </div>*@
+                        <nav>
+                            <ul class="pager">
+                                <li class="previous" ng-show="qn > 0">
+                                    <a class="" href="#" ng-click="qprev()"><span class="" aria-hidden="true">←</span> Previous</a>
+                                </li>
+
+                                <li class="next" ng-show="qn < qlistlen">
+                                    <a class="" href="#" ng-click="qnext()">Next <span class="" aria-hidden="true">→</span></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div ng-show="qlistlen < 0">
+                                Please select one or several role(s).
+                            </div>
+                            <form class="form-horizontal" id="configform" role="form" name="form" ng-show="qlistlen >= 0">
+                                <div class="form-group">
+                                    @*<label class="col-lg-2 control-label">Name</label>*@
+                                    <div class="col-lg-7 col-lg-offset-2" style="padding-top: 4px;">
+                                        <span style="font-weight: bold">{{ qname }}</span>
+                                    </div>
+                                    <div class="col-lg-3" id="divskip" style="display: none; padding-top: 4px;">
+                                        <input type="checkbox" id="qaskip" name="qaskip" ng-model="qaskip" ng-change="skip(qaskip)"> <span>Skip question ?</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @*<label class="col-lg-2 control-label">Description</label>*@
+                                    <div class="col-lg-7 col-lg-offset-2" style="padding-top: 4px;">
+                                        <span style="font-style: italic">{{ qdescription }}</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-lg-2 control-label">Answer</label>
+                                    <div class="col-lg-7" id="divtextarea" style="display: none; padding-top: 4px;">
+                                        <textarea class="form-control" name="qatext" ng-model="qatext" rows="5" cols="80"></textarea>
+                                    </div>
+                                    <div class="col-lg-7" id="divint" style="display: none; padding-top: 4px;">
+                                        <input type="number" name="qaint" ng-model="qaint" min="0" max="5" step="1"/>
+                                    </div>
+                                    <div class="col-lg-7" id="divbool" style="display: none; padding-top: 4px;">
+                                        <input type="checkbox" name="qabool" ng-model="qabool.val" bs-switch switch-size="small" switch-on-text="Yes" switch-off-text="No" ng-true-value="'Yes'" ng-false-value="'No'">
+                                    </div>
+                                    <div class="col-lg-10" style="margin-left: 20px;">
+                                        <div class="checkbox" id="chk1" style="display: none">
+                                            <input type="checkbox" name="qachks[]" ng-model="qachk.chk1"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="chk2" style="display: none">
+                                            <input type="checkbox" name="qachks[]" ng-model="qachk.chk2"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="chk3" style="display: none">
+                                            <input type="checkbox" name="qachks[]" ng-model="qachk.chk3"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="chk4" style="display: none">
+                                            <input type="checkbox" name="qachks[]" ng-model="qachk.chk4"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="chk5" style="display: none">
+                                            <input type="checkbox" name="qachks[]" ng-model="qachk.chk5"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="rad1" style="display: none">
+                                            <input type="radio" name="qarads[]" ng-model="qarad.val" value="1"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="rad2" style="display: none">
+                                            <input type="radio" name="qarads[]" ng-model="qarad.val" value="2"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="rad3" style="display: none">
+                                            <input type="radio" name="qarads[]" ng-model="qarad.val" value="3"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="rad4" style="display: none">
+                                            <input type="radio" name="qarads[]" ng-model="qarad.val" value="4"> <span>Undefined</span>
+                                        </div>
+                                        <div class="checkbox" id="rad5" style="display: none">
+                                            <input type="radio" name="qarads[]" ng-model="qarad.val" value="5"> <span>Undefined</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                    <label class="col-lg-2 control-label">Comment</label>
+                                    <div class="col-lg-7" id="divcomment" style="display: none; padding-top: 30px;">
+                                        <textarea class="form-control" name="qacomment" ng-model="qacomment" rows="5"></textarea>
+                                    </div>
+                                </div><!-- /.row -->
+                                <hr />
+                                <div class="row">
+                                    <label class="col-lg-2 control-label">Consultant Comment</label>
+                                    <div class="col-lg-7" id="divconsultantcomment" style="display: none; padding-top: 30px;">
+                                        <textarea class="form-control" name="qaconsultantcomment" ng-model="qaconsultantcomment" rows="5"></textarea>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-1 col-lg-offset-10" style="padding-top: 10px">
+                                        <button class="btn btn-block btn-default btn-flat" id="clear" data-toggle="tooltip" title="Clear"><i class="ion ion-trash-a"></i></button>
+                                    </div>
+                                </div>
+                                <br />
+                            </form>
+
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+        <div class="col-md-2">
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Roles</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    </div>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Raw(ViewBag.Roles)
+                            </div>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Interviews"]').parent().addClass('active');
+    });
+</script>
+
+<!-- Collapse sidebar + change bg color -->
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('body.sidebar-mini').addClass('sidebar-collapse');
+    });
+
+    $('#save').on('click', function() {
+        var $this = $(this);
+        $this.button('loading');
+    });
+
+    $('#collapseall').click(function () {
+        $('.node1').each(function () {
+            if ($(this).hasClass("toClose")) {
+                $(this).nextUntil(".node1").wrapInner().fadeOut(400);
+                $(this).removeClass("toClose");
+                $(this).find("i").removeClass("ion-arrow-down-b").addClass("ion-arrow-right-b");
+            }
+            else {
+                $(this).nextUntil(".node1").wrapInner().fadeIn(400);
+                $(this).addClass("toClose");
+                $(this).find("i").removeClass("ion-arrow-right-b").addClass("ion-arrow-down-b");
+            }
+        });
+    });
+
+    $('.node2').click(function () {
+        $(this).nextUntil('.node').fadeToggle(400);
+        $(this).find("i").toggleClass("ion-ios-arrow-down").toggleClass("ion-ios-arrow-right");
+    });
+
+    $(".node1").click(function () {
+        $(this).find("i").toggleClass("ion-arrow-down-b").toggleClass("ion-arrow-right-b");
+        if ($(this).hasClass("toClose")) {
+            $(this).removeClass("toClose").find("i").removeClass("ion-arrow-down-b").addClass("ion-arrow-right-b");
+            $(this).nextUntil(".node1").fadeOut(400);
+            $(this).nextUntil(".node1", ".node2").find("i").removeClass("ion-ios-arrow-down").addClass("ion-ios-arrow-right");
+        } else {
+            $(this).addClass("toClose").find("i").addClass("ion-arrow-down-b").removeClass("ion-arrow-right-b");
+            if ($(this).parent().find(".node2").length > 0) {
+                $(this).nextUntil(".node1", ".node2").fadeIn(400);
+                $(this).nextUntil(".node1", ".node2").find("i").removeClass("ion-ios-arrow-down").addClass("ion-ios-arrow-right");
+            } else {
+                $(this).nextUntil(".node1").fadeIn(400);
+            }
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    function updateCompletion() {
+        var nbnodes = document.getElementsByClassName("completion");
+        var completion = 0;
+        for (var i = 0; i < nbnodes.length; i++) {
+            completion += parseInt(nbnodes[i].innerHTML.replace('%', ''));
+        }
+        if (i > 0) {
+            completion = completion / i;
+            var array = [completion, '@Model'];
+            $.ajax({
+                url: '@Url.Action("SaveCompletion", "ConductInterview")',
+                contentType: 'application/json;',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(array),
+                success: function(result) {
+                    if (result.message != "") {
+                        //alert(result.message);
+                    }
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<Framework.Question>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AnswerType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PossibleAnswer)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Node.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Role)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsFactor)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsRelevant)
+        </th>
+        
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AnswerType)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PossibleAnswer)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Node.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Role.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsFactor)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsRelevant)
+        </td>
+        
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.IdQuestion }) |
+            @Html.ActionLink("Details", "Details", new { id=item.IdQuestion }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.IdQuestion })
+        </td>
+    </tr>
+}
+
+</table>

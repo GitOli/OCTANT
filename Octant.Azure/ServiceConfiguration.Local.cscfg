@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="Octant.Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="Octant">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="ni9ma" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEByiAnCtdrWBTOFgC9PRWgcwDQYJKoZIhvcNAQEBBQAEggEAB1vugLFh/HMmiK7V0CgJIRHZ2s+D4cnQZ1mhGZB/FUzDB0BQuMZ3B8P+X2acgprfSsdEbeS9WozrL2kkzsPAiKvcRZtiXEbh6TMnktdh5ildnTWIA9ukOpBn/emLvCx5iprzQ7+XhpJVmy/VU2yees1cGWTkYaqPF3m2J+ZEczC5NYcZCGFBIKyZayBctUCKWpSG7q1Hml5TJADu6A2sPX5KUIRLWj79Kjjv5wW5te/2yd86q5Q4CPmoJt0BY0H0MI9Fs6ghEGvRawL26yhhnH6anR3lbr4LvqC9ZgCS1dIZ0H/4TYkUWbIyJciMk5lW+7Lo7yZvqE2y5CKE1jvqmjAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECGcDsoSrGZKrgBDUi/h1uFabwALsGxMwiUgL" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2016-08-06T23:59:59.0000000+02:00" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
+      <Setting name="OctantDB" value="Data Source=(localdb)\ProjectsV12;Initial Catalog=OCTANT_db;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="84B7E7AFF83C1EB2D057BFCF72E6DC283A0B0222" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>

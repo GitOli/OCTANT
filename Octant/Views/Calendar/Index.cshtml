@@ -1,0 +1,211 @@
+﻿@using IdentitySample.Models
+@using Interview
+
+@{
+    ViewBag.Title = "Calendar";
+}
+
+<style>
+    .fc-day-grid-event {
+        padding: 1px 1px !important;
+    }
+    .fc-event {
+        border-radius: 0 !important;
+        cursor: pointer !important;
+    }
+    .modal-body label {
+        font-size: 12px;
+        font-weight: 300;
+    }
+</style>
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-bar-chart"></i> Octant</a></li>
+        <li class="active">Calendar</li>
+    </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        @*<div class="col-md-3">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Add an interview</h3>
+                </div>*@<!-- ./box-header -->
+                @*<div class="box-body">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-comments"></i></div>
+                            <input type="text" class="form-control" placeholder="Interview name" id="interview" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-book"></i></div>*@
+                            @*@Html.DropDownList("campaign", null, "Campaign", new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-users"></i></div>
+                            <input type="text" class="form-control" placeholder="Candidat" id="candidat" />
+                        </div>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                            @Html.DropDownList("consultant", null, "Consultant", new { @class = "form-control" })*@
+                        @*</div>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                            <input type="date" class="form-control iso" placeholder="Date" id="date" />
+                        </div>
+                    </div>*@
+                @*</div><!-- ./box-body -->
+                <div class="box-footer">
+                    <input type="submit" id="add-interview" value="Create" class="btn btn-flat btn-block btn-success" />
+                    <span id="error" class="text-danger" style="display: none;">The form has to be filled completely</span>
+                </div><!-- /.box-footer -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->*@
+        <div class="col-md-10 col-md-offset-1">
+            <div class="box box-warning">
+                <div class="box-body no-padding">
+                    <div id="calendar"></div>
+                </div><!-- ./box-body -->
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</section><!-- /.content -->
+
+<div class="modal" id="info-interview-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" id="modal-title">No interview selected</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="col-md-3 text-right">Date :</label> <div id="modal-date" class="col-md-9"></div>
+                </div>
+                <br />
+                <div class="row">
+                    <label class="col-md-3 text-right">Campaign :</label> <div id="modal-campaign" class="col-md-9"></div>
+                </div>
+                <br />
+                <div class="row">
+                    <label class="col-md-3 text-right">Consultant :</label> <div id="modal-consultant" class="col-md-9"></div>
+                </div>
+                <div class="row">
+                    <label class="col-md-3 text-right">Candidats :</label> <div id="modal-candidats" class="col-md-9"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="modal-link">Go to the campaign of this interview</a>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Change the active in the left side menu -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('ul.sidebar-menu > li').removeClass('active');
+        $('ul.sidebar-menu > li > a[href="/Calendar"]').parent().addClass('active');
+    });
+</script>
+
+@Scripts.Render("~/FL/js/calendar")
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'today'
+            },
+            buttonText: {
+                today: 'today',
+                month: 'month',
+                week: 'week',
+                day: 'day'
+            },
+            firstDay: 1,
+            editable: false,
+            events: @Html.Raw(ViewBag.Interviews),
+            eventClick: function(calEvent, jsEvent, view) {
+                $.ajax({
+                    url: '@Url.Action("GetInterview", "Calendar")',
+                    type: 'POST',
+                    data: {
+                        idInterview: calEvent.idInterview
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.msg == "success") {
+                            $('#modal-title').html(result.name);
+                            $('#modal-date').html(result.date);
+                            $('#modal-campaign').html(result.campaign);
+                            $('#modal-consultant').html(result.consultant);
+                            $('#modal-candidats').html(result.candidats);
+                            $('#modal-link').attr('href', result.link);
+                            $('#info-interview-modal').modal('toggle');
+                        }
+                        else {
+                            alert("An error occured, please retry in a few moment.");
+                        }
+                    }
+                });
+            }
+        })
+    });
+
+    //$(document).ready(function () {
+    //    $('#add-interview').click(function () {
+    //        $('#error').hide();
+    //        var b = true;
+
+    //        if (($('#interview').val() == undefined) || ($('#interview').val() == "")
+    //            || ($('#campaign').val() == undefined) || ($('#campaign').val() == "")
+    //            || ($('#candidat').val() == undefined) || ($('#candidat').val() == "")
+    //            || ($('#consultant').val() == undefined) || ($('#consultant').val() == "")
+    //            || ($('#date').val() == undefined) || ($('#date').val() == "")
+    //            /*|| ($('#duration').val() == undefined) || ($('#duration').val() == "")*/)
+    //        {
+    //            $('#error').show();
+    //            b = false;
+    //        }
+
+    //        var d = new Date($('#date').val());
+
+    //        if (b) {
+    //            var newInterview = {
+    //                title: $('#interview').val(),
+    //                allDay: true,
+    //                start: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 8, 30),
+    //                idInterview: 27 /* Replace by returned id from ajax */
+    //                /*,
+    //                end: new Date()*/
+    //            };
+    //            $('#calendar').fullCalendar('renderEvent', newInterview, true);
+
+    //            $('#interview').val("");
+    //            $('#campaign').val("");
+    //            $('#candidat').val("");
+    //            $('#consultant').val("");
+    //            $('#date').val("");
+    //            $('#time').val("");
+    //        }
+    //    });
+    //});
+</script>
