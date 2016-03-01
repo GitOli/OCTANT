@@ -14,7 +14,7 @@ namespace Octant.Controllers
     [Authorize(Roles = "Admin,Consultant,Manager")]
     public class AnswersController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext(); 
 
         // GET: Answers
         public ActionResult Index()
